@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public class Main {
+public class Weight {
     public static void main(String[] args) {
         final double g= 9.8;
         System.out.println("Enter your weight:");
