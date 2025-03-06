@@ -1,7 +1,7 @@
 package exercise1;
 import java.util.Scanner;
 
-public class E5_2 {
+public class Number_compare {
     public static void main(String[] args){
         System.out.println("Enter a number: ");
         Scanner input = new Scanner(System.in);
