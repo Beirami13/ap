@@ -6,11 +6,9 @@ public class Uppercase {
         System.out.println("Enter numbers: ");
         Scanner input = new Scanner(System.in);
         String st = input.nextLine();
-        for (int i = 0; i < st.length() - 1; i++) {
+        for (int i = 0; i < st.length(); i+=2) {
             char c = st.charAt(i);
-            if (Character.isUpperCase(c)){
-                System.out.println(c);
-            }
+            System.out.println(c);
         }
         input.close();
     }
