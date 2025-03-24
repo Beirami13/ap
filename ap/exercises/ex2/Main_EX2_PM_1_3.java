@@ -1,4 +1,4 @@
-package exercises.ex2;
+package ap.exercises.ex2;
 
 import java.util.Scanner;
 import java.util.Random;
@@ -25,8 +25,11 @@ public class Main_EX2_PM_1_3 {
                 }
             }
         }
-        System.out.println("Enter the count of . :");
-        int count1 = input.nextInt();
+        int count1;
+        do{
+            System.out.println("Enter the count of . :");
+            count1 = input.nextInt();
+        }while (count1>k*k);
         for (int i = 0; i < count1; i++) {
             int x = 1 + rnd.nextInt(k);
             int y = 1 + rnd.nextInt(k);
