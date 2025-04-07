@@ -3,7 +3,7 @@ package ap.exercises.ex3;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class Main_EX3_LM_1_2 {
+public class Main_EX3_LM_1_2_A {
     static class Book {
         private String title;
         private String author;
