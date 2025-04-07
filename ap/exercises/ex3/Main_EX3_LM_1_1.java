@@ -83,7 +83,7 @@ class Student {
     }
 }
 
-public class EX3_LM_3_2 {
+public class Main_EX3_LM_1_1 {
     public static void main(String[] args) {
         Book book1 = new Book("melat eshqh", "Elif", 500, 2010);
         Book book2 = new Book("midgard", "Ahmadreza Salegi", 350, 2013);
