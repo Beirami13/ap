@@ -1,5 +1,7 @@
 package ap.exercises.ex3;
 
+import java.util.Scanner;
+
 public class Main_EX3_LM_1_3 {
     static class Student {
         public String firstName;
@@ -22,7 +24,11 @@ public class Main_EX3_LM_1_3 {
                 new Main_EX3_LM_1_3.Student("Tara", "Moradi", "2", "Art"),
                 new Main_EX3_LM_1_3.Student("Amir", "Karimi", "3", "Physics")
         };
-        System.out.println(findStuByName(students, "Ahoo", "Rezayi"));
+        Scanner input =new Scanner(System.in);
+        System.out.println("Enter first name and last name:  ");
+        String first=input.nextLine();
+        String last=input.nextLine();
+        System.out.println(findStuByName(students, first, last));
     }
     public static Student findStuByName(Student[] students, String first, String last){
         for (int i=0; i<students.length; i++){
