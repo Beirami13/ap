@@ -1,10 +1,10 @@
 package ap.exercises.ex4;
 
-class Controller {
+class lController {
     private int firstSwitch;
     private int secondSwitch;
 
-    public Controller() {
+    public lController() {
         firstSwitch = 0;
         secondSwitch = 0;
     }
@@ -33,7 +33,7 @@ class Controller {
 
 public class Main_EX4_LM_3_6 {
     public static void main(String[] args) {
-        Controller controller = new Controller();
+        lController controller = new lController();
 
         System.out.println("Switch 1 State: " + controller.getSwitchState(1));
         System.out.println("Switch 2 State: " + controller.getSwitchState(2));
