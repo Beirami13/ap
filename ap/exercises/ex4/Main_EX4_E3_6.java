@@ -31,7 +31,7 @@ class lController {
     }
 }
 
-public class Main_EX4_LM_3_6 {
+public class Main_EX4_E3_6 {
     public static void main(String[] args) {
         lController controller = new lController();
 
