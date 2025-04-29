@@ -1,6 +1,7 @@
 package ap.exercises.ex4;
 
 public class Main_EX4_3_12 {
+
     public static void main(String[] args) {
         Employee H = new Employee("Hirad", 50000);
 
@@ -11,6 +12,7 @@ public class Main_EX4_3_12 {
 
         System.out.println("After Raise: " + H.getSalary());
     }
+
 }
 
 class Employee {
