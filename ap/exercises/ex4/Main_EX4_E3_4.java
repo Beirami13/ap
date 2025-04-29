@@ -35,7 +35,7 @@ class LightController {
 }
 
 
-public class Main_EX4_LM_3_4 {
+public class Main_EX4_E3_4 {
     public static void main(String[] args) {
         LightController control = new LightController();
         System.out.println("Lamp State is: " + control.getLampState());
