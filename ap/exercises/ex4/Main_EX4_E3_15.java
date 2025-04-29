@@ -1,6 +1,6 @@
 package ap.exercises.ex4;
 
-public class Main_EX4_3_15 {
+public class Main_EX4_E3_15 {
     public static void main(String[] args) {
         Letter myLetter = new Letter("Hirad", "Akbari");
 
