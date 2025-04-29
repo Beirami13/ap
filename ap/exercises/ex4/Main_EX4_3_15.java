@@ -2,10 +2,10 @@ package ap.exercises.ex4;
 
 public class Main_EX4_3_15 {
     public static void main(String[] args) {
-        Letter myLetter = new Letter("Mary", "John");
+        Letter myLetter = new Letter("Hirad", "Akbari");
 
-        myLetter.addLine("I am sorry we must part.");
-        myLetter.addLine("I wish you all the best.");
+        myLetter.addLine("I am great");
+        myLetter.addLine("I wish you the best");
 
         System.out.println(myLetter.getText());
     }
