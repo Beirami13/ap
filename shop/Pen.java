@@ -18,4 +18,8 @@ public class Pen {
     public String getBrand(){
         return brand;
     }
+    @Override
+    public String toString() {
+        return "Pen [price=" + price + ", color=" + color + ", brand=" + brand + "]";
+    }
 }
