@@ -16,7 +16,7 @@ public class Main_EX2_PM_1_1 {
                     if (j == 0 || j == k + 1) {
                         System.out.print("*");
                     } else {
-                        System.out.print(" ");
+                        System.out.print("\t");
                     }
                 }
             }
