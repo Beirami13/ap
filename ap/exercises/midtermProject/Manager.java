@@ -13,21 +13,27 @@ public class Manager {
         this.level=level;
     }
     public String getFirstName(){
+
         return firstName;
     }
     public String getLastName(){
+
         return lastName;
     }
     public Level getLevel(){
+
         return level;
     }
     public void setFirstName(String firstName){
+
         this.firstName=firstName;
     }
     public void setLastName(String lastName){
+
         this.lastName=lastName;
     }
     public void setLevel(Level level){
+
         this.level=level;
     }
 }

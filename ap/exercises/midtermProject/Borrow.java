@@ -6,21 +6,18 @@ import java.time.temporal.ChronoUnit;
 public class Borrow {
     private Book book;
     private Student student;
-    private Librarian librarian1;
-    private Librarian librarian2;
+    private Librarian librarian;
     private LocalDate borrowedDate;
     private LocalDate endDate;
     private LocalDate returnDate;
     private int daysLate;
 
-    public Borrow(Book book, Student student, Librarian librarian1, Librarian librarian2,
-                  LocalDate borrowedDate, LocalDate endDate) {
+    public Borrow(Book book, Student student, Librarian librarian, LocalDate borrowedDate) {
         this.book = book;
         this.student = student;
-        this.librarian1 = librarian1;
-        this.librarian2 = librarian2;
+        this.librarian = librarian;
         this.borrowedDate = borrowedDate;
-        this.endDate = endDate;
+        this.endDate = borrowedDate.plusMonths(1);
         this.returnDate = null;
         this.daysLate = -1;
     }
@@ -28,35 +25,29 @@ public class Borrow {
     public Book getBook() {
         return book;
     }
-
     public Student getStudent() {
         return student;
     }
-
-    public Librarian getLibrarian1() {
-        return librarian1;
+    public Librarian getLibrarian() {
+        return librarian;
     }
-
-    public Librarian getLibrarian2() {
-        return librarian2;
-    }
-
     public LocalDate getBorrowedDate() {
+
         return borrowedDate;
     }
 
     public LocalDate getEndDate() {
+
         return endDate;
     }
-
     public LocalDate getReturnDate() {
+
         return returnDate;
     }
-
     public int getDaysLate() {
+
         return daysLate;
     }
-
     public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
         if (returnDate.isAfter(endDate)) {
@@ -65,8 +56,17 @@ public class Borrow {
             this.daysLate = 0;
         }
     }
-
     public boolean isReturned() {
+
         return returnDate != null;
+    }
+    @Override
+    public String toString() {
+        return "Book: " + book.getTitle() + " Author: " + book.getAuthor() +
+                " Student: " + student.getFirstName() + " " + student.getLastName() + " ID: " + student.getStudentID() +
+                " Librarian: " + librarian.getFirstName() + " " + librarian.getLastName() +
+                " Borrowed: " + borrowedDate + " in: " + endDate +
+                " Returned: " + (returnDate != null ? returnDate : "Not yet") +
+                " Days Late: " + (daysLate >= 0 ? daysLate : "N/A");
     }
 }
