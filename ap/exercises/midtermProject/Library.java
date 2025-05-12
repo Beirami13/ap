@@ -19,12 +19,28 @@ public class Library {
         librarians.add(new Librarian("Ali", "Rezai", 111));
         librarians.add(new Librarian("Sara", "Ahmadi", 122));
     }
+
+    public static List<Student> getStudents() {
+        return students;
+    }
+
     public void addBook(Book book) {
         books.add(book);
     }
-    public void registerStu(Student stu) {
+
+    public void addStu(Student stu) {
         students.add(stu);
     }
+
+    public Student loginStudent(int studentID) {
+        for (Student s : students) {
+            if (s.getStudentID()==studentID) {
+                return s;
+            }
+        }
+        return null;
+    }
+
     public Book search(String title, String author) {
         for (Book book : books) {
             if (book.getTitle().equals(title) && book.getAuthor().equals(author)) {
@@ -108,6 +124,7 @@ public class Library {
             }
         }
     }
+
     public void showLibrarianActivity(){
         for (Librarian l : librarians){
             int count=0;
@@ -118,5 +135,25 @@ public class Library {
             }
             System.out.println("Librarian "+l.getFirstName()+l.getLastName()+" ID "+l.getLibrarianID()+" has "+count+" borrows");
         }
+    }
+
+    public void editLibrarianInfo(int librarianID,String librarianFirst, String librarianLast){
+        for (Librarian l : librarians){
+            if (librarianID==l.getLibrarianID()){
+                l.setFirstName(librarianFirst);
+                l.setLastName(librarianLast);
+            }
+            System.out.println("Librarians info changed to "+l.getFirstName()+l.getLastName()+" ID "+l.getLibrarianID());
+        }
+    }
+
+    public void addBooksInfo(String info){
+        for (Borrow b : borrows){
+            b.getBook().setInfo(info);
+        }
+    }
+
+    public void addLibrarian(Librarian librarian){
+        librarians.add(librarian);
     }
 }
