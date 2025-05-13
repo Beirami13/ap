@@ -20,9 +20,18 @@ public class Library {
         librarians.add(new Librarian("Sara", "Ahmadi", 122));
     }
 
-    public static List<Student> getStudents() {
+    public List<Librarian> getLibrarians() {
+        return librarians;
+    }
+
+    public List<Student> getStudents() {
         return students;
     }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
+
 
     public void addBook(Book book) {
         books.add(book);
@@ -32,6 +41,10 @@ public class Library {
         students.add(stu);
     }
 
+    public void addLibrarian(Librarian librarian) {
+        librarians.add(librarian);
+    }
+
     public Student loginStudent(int studentID) {
         for (Student s : students) {
             if (s.getStudentID()==studentID) {
@@ -39,6 +52,24 @@ public class Library {
             }
         }
         return null;
+    }
+
+    public Librarian loginLibrarian(int librarianID) {
+        for (Librarian l : librarians) {
+            if (l.getLibrarianID()==librarianID) {
+                return l;
+            }
+        }
+        return null;
+    }
+
+    public void changeLibrarianInfo(int librarianID, String first, String last){
+        for (Librarian l : librarians) {
+            if (l.getLibrarianID()==librarianID) {
+                l.setFirstName(first);
+                l.setLastName(last);
+            }
+        }
     }
 
     public Book search(String title, String author) {
@@ -137,23 +168,9 @@ public class Library {
         }
     }
 
-    public void editLibrarianInfo(int librarianID,String librarianFirst, String librarianLast){
-        for (Librarian l : librarians){
-            if (librarianID==l.getLibrarianID()){
-                l.setFirstName(librarianFirst);
-                l.setLastName(librarianLast);
-            }
-            System.out.println("Librarians info changed to "+l.getFirstName()+l.getLastName()+" ID "+l.getLibrarianID());
-        }
-    }
-
     public void addBooksInfo(String info){
         for (Borrow b : borrows){
             b.getBook().setInfo(info);
         }
-    }
-
-    public void addLibrarian(Librarian librarian){
-        librarians.add(librarian);
     }
 }
