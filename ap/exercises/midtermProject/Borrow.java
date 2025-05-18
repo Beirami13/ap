@@ -11,6 +11,7 @@ public class Borrow {
     private LocalDate endDate;
     private LocalDate returnDate;
     private int daysLate;
+    private boolean approved;
 
     public Borrow(Book book, Student student, Librarian librarian, LocalDate borrowedDate) {
         this.book = book;
@@ -20,6 +21,7 @@ public class Borrow {
         this.endDate = borrowedDate.plusMonths(1);
         this.returnDate = null;
         this.daysLate = -1;
+        this.approved = false;
     }
 
     public Book getBook() {
@@ -60,6 +62,14 @@ public class Borrow {
 
         return returnDate != null;
     }
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void approve() {
+        this.approved = true;
+    }
+
     @Override
     public String toString() {
         return "Book: " + book.getTitle() + " Author: " + book.getAuthor() +

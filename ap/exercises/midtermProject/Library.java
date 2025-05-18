@@ -1,5 +1,6 @@
 package ap.exercises.midtermProject;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class Library {
@@ -81,14 +82,8 @@ public class Library {
         return null;
     }
 
-    public void borrowBook(int studentId, String title, String author) {
-        Student student = null;
-        for (Student s : students) {
-            if (s.getStudentID()==studentId) {
-                student = s;
-                break;
-            }
-        }
+    public void requestBorrow(int studentId, String title, String author) {
+        Student student = loginStudent(studentId);
         if (student == null) {
             System.out.println("Student not found.");
             return;
@@ -99,17 +94,18 @@ public class Library {
             return;
         }
         for (Borrow b : borrows) {
-            if (b.getBook().equals(book) && !b.isReturned()) {
-                System.out.println("Book has already been borrowed.");
+            if (b.getBook().equals(book) && !b.isReturned() && b.isApproved()) {
+                System.out.println("Book is already borrowed or the librarian won't let you borrow it.");
                 return;
             }
         }
         Random rand = new Random();
         Librarian librarian = librarians.get(rand.nextInt(librarians.size()));
-        Borrow borrow = new Borrow(book, student, librarian, java.time.LocalDate.now());
+        Borrow borrow = new Borrow(book, student, librarian, LocalDate.now());
         borrows.add(borrow);
-        System.out.println("Book borrowed successfully Librarian is " + librarian.getFirstName() + " " + librarian.getLastName());
+        System.out.println("Borrow request submitted. Waiting for librarian approval.");
     }
+
     public void returnBook(int studentId, String title, String author) {
         Student student = null;
         for (Student s : students) {
@@ -128,7 +124,7 @@ public class Library {
             return;
         }
         for (Borrow b : borrows) {
-            if (b.getBook().equals(book) && b.getStudent().equals(student) && !b.isReturned()) {
+            if (b.getBook().equals(book) && b.getStudent().equals(student) && !b.isReturned() && b.isApproved()) {
                 b.setReturnDate(java.time.LocalDate.now());
                 System.out.println("Book returned by " + student.getFirstName() + " " + student.getLastName());
                 if (b.getDaysLate() > 0) {
@@ -139,9 +135,9 @@ public class Library {
         }
         System.out.println("hasn't borrowed.");
     }
-    public void showBorrows(){
-        for (Borrow b : borrows){
-            if(!b.isReturned()){
+    public void showBorrows() {
+        for (Borrow b : borrows) {
+            if (!b.isReturned() && b.isApproved()) {
                 System.out.println(b);
             }
         }
@@ -173,4 +169,45 @@ public class Library {
             b.getBook().setInfo(info);
         }
     }
+
+    public void showTop10BorrowedBooks() {
+        List<Book> topBooks = new ArrayList<>();
+
+        for (Book book : books) {
+            int count = 0;
+            for (Borrow b : borrows) {
+                if (b.isApproved() && b.getBook().equals(book)) {
+                    count++;
+                }
+            }
+            int i = 0;
+            while (i < topBooks.size()) {
+                Book current = topBooks.get(i);
+                int currentCount = 0;
+                for (Borrow b : borrows) {
+                    if (b.isApproved() && b.getBook().equals(current)) {
+                        currentCount++;
+                    }
+                }
+                if (count > currentCount) break;
+                i++;
+            }
+            topBooks.add(i, book);
+            if (topBooks.size() > 10) {
+                topBooks.remove(topBooks.size() - 1);
+            }
+        }
+        System.out.println("Top 10 Borrowed Books:");
+        for (int i = 0; i < topBooks.size(); i++) {
+            Book book = topBooks.get(i);
+            int count = 0;
+            for (Borrow b : borrows) {
+                if (b.isApproved() && b.getBook().equals(book)) {
+                    count++;
+                }
+            }
+            System.out.println((i + 1) + ". " + book.getTitle() + " by " + book.getAuthor() + " - Borrowed " + count + " times");
+        }
+    }
+
 }

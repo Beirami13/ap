@@ -78,7 +78,7 @@ public class Menu {
                     String title = input.nextLine();
                     System.out.print("Author: ");
                     String author = input.nextLine();
-                    library.borrowBook(ID, title, author);
+                    library.requestBorrow(ID, title, author);
                     break;
                 }
                 case 5: {
@@ -178,14 +178,18 @@ public class Menu {
                 }
                 case 2: {
                     System.out.print("The list of book that are returned late: ");
-
+                    library.showLateBorrows();
                     break;
                 }
                 case 3: {
                     System.out.println("The list of borrowed book for each librarian");
+                    library.showLibrarianActivity();
                     break;
                 }
-                case 4: {
+                case 4:{
+                    library.showTop10BorrowedBooks();
+                }
+                case 5: {
                     System.out.println("Exiting student menu.");
                     return;
                 }
