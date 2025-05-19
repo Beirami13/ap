@@ -108,7 +108,8 @@ public class Menu {
             System.out.println("Enter 1 for entering to library");
             System.out.println("Enter 2 for change your information");
             System.out.println("Enter 3 for add books information");
-            System.out.println("Enter 4 to exit");
+            System.out.println("Enter 4 for pend request book");
+            System.out.println("Enter 5 to exit");
             System.out.print("Enter your choice: ");
 
             int choice = input.nextInt();
@@ -125,22 +126,40 @@ public class Menu {
                 case 2: {
                     System.out.print("Enter your ID to change your information: ");
                     int ID = input.nextInt();
+                    input.nextLine();
                     System.out.print("First name that you want to change: ");
                     String first = input.nextLine();
                     System.out.print("Last name that you want to change: ");
                     String last = input.nextLine();
-                    input.nextLine();
                     library.changeLibrarianInfo(ID, first, last);
                     break;
                 }
+
                 case 3: {
-                    System.out.println("Enter book's title and author for adding informations book");
-                    System.out.print("Enter information: ");
-                    String info = input.nextLine();
-                    library.addBooksInfo(info);
+                    System.out.println("Enter book's title for adding book");
+                    String title = input.nextLine();
+                    System.out.println("Enter book's author");
+                    String author = input.nextLine();
+                    System.out.println("Enter book's created year");
+                    int year = input.nextInt();
+                    System.out.println("Enter book's pages");
+                    int page = input.nextInt();
+                    Book book = new Book(title,author,year,page);
+                    library.addBook(book);
                     break;
                 }
                 case 4: {
+                    System.out.println("Pending borrow requests:");
+                    System.out.print("Enter request ID to process: ");
+                    int requestId = input.nextInt();
+                    input.nextLine();
+                    System.out.print("Approve? (true/false): ");
+                    boolean approve = input.nextBoolean();
+                    input.nextLine();
+                    library.reviewBorrowRequest(requestId, approve);
+                    break;
+                }
+                case 5:{
                     System.out.println("Exiting student menu.");
                     return;
                 }
@@ -156,8 +175,9 @@ public class Menu {
             System.out.println("Enter 1 for adding librarian");
             System.out.println("Enter 2 for showing the books that returned late");
             System.out.println("Enter 3 for showing borrows  of each librarian");
-            System.out.println("Enter 4 for showing 10 books that were most borrowed");
-            System.out.println("Enter 5 to exit");
+            System.out.println("Enter 4 for showing returns  of each librarian");
+            System.out.println("Enter 5 for showing 10 books that were most borrowed");
+            System.out.println("Enter 6 to exit");
             System.out.print("Enter your choice: ");
 
             int choice = input.nextInt();
@@ -183,13 +203,19 @@ public class Menu {
                 }
                 case 3: {
                     System.out.println("The list of borrowed book for each librarian");
-                    library.showLibrarianActivity();
+                    library.showLibrarianActivity1();
                     break;
                 }
                 case 4:{
-                    library.showTop10BorrowedBooks();
+                    System.out.println("The list of returned book for each librarian");
+                    library.showLibrarianActivity2();
+                    break;
                 }
-                case 5: {
+                case 5:{
+                    library.showTop10BorrowedBooks();
+                    break;
+                }
+                case 6: {
                     System.out.println("Exiting student menu.");
                     return;
                 }

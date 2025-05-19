@@ -11,8 +11,8 @@ public class Borrow {
     private LocalDate endDate;
     private LocalDate returnDate;
     private int daysLate;
-    private boolean approved;
-
+    private boolean approved = false;
+    private boolean returned = false;
     public Borrow(Book book, Student student, Librarian librarian, LocalDate borrowedDate) {
         this.book = book;
         this.student = student;
@@ -24,6 +24,9 @@ public class Borrow {
         this.approved = false;
     }
 
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
     public Book getBook() {
         return book;
     }
@@ -57,6 +60,9 @@ public class Borrow {
         } else {
             this.daysLate = 0;
         }
+    }
+    public void setEndDate(LocalDate endDate){
+        this.endDate=endDate;
     }
     public boolean isReturned() {
 

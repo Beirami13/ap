@@ -36,4 +36,9 @@ public class Manager {
 
         this.level=level;
     }
+    @Override
+    public String toString() {
+        return "Manager: " + firstName + " " + lastName + " (Level: " + level + ")";
+    }
+
 }

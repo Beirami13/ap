@@ -21,6 +21,18 @@ public class Library {
         librarians.add(new Librarian("Sara", "Ahmadi", 122));
     }
 
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public List<Borrow> getBorrows() {
+        return borrows;
+    }
+
+    public Manager getManager() {
+        return manager;
+    }
+
     public List<Librarian> getLibrarians() {
         return librarians;
     }
@@ -36,31 +48,40 @@ public class Library {
 
     public void addBook(Book book) {
         books.add(book);
+        System.out.println("Book added.");
     }
 
     public void addStu(Student stu) {
         students.add(stu);
+        System.out.println("Your ID is: " + stu.getStudentID());
     }
 
     public void addLibrarian(Librarian librarian) {
         librarians.add(librarian);
+        System.out.println("Librarian with "+librarian.getLibrarianID()+" added.");
     }
 
     public Student loginStudent(int studentID) {
         for (Student s : students) {
             if (s.getStudentID()==studentID) {
+                System.out.println("Student"+ students.getFirst()+ students.getLast()+" login.");
                 return s;
             }
         }
+        System.out.println("Invalid librarian ID. Exiting program...");
+        System.exit(0);
         return null;
     }
 
     public Librarian loginLibrarian(int librarianID) {
         for (Librarian l : librarians) {
             if (l.getLibrarianID()==librarianID) {
+                System.out.println("Librarian "+l.getFirstName()+l.getLastName()+" with ID "+l.getLibrarianID()+"login.");
                 return l;
             }
         }
+        System.out.println("Invalid librarian ID. Exiting program...");
+        System.exit(0);
         return null;
     }
 
@@ -69,6 +90,7 @@ public class Library {
             if (l.getLibrarianID()==librarianID) {
                 l.setFirstName(first);
                 l.setLastName(last);
+                System.out.println("information had changed.");
             }
         }
     }
@@ -94,8 +116,12 @@ public class Library {
             return;
         }
         for (Borrow b : borrows) {
-            if (b.getBook().equals(book) && !b.isReturned() && b.isApproved()) {
-                System.out.println("Book is already borrowed or the librarian won't let you borrow it.");
+            if (b.getBook().equals(book) && !b.isReturned()) {
+                if (b.isApproved()) {
+                    System.out.println("Book is already borrowed.");
+                } else {
+                    System.out.println("There is already a pending request for this book.");
+                }
                 return;
             }
         }
@@ -104,6 +130,7 @@ public class Library {
         Borrow borrow = new Borrow(book, student, librarian, LocalDate.now());
         borrows.add(borrow);
         System.out.println("Borrow request submitted. Waiting for librarian approval.");
+        System.out.println("Request ID: " + (borrows.size() - 1)); // نمایش شناسه درخواست
     }
 
     public void returnBook(int studentId, String title, String author) {
@@ -152,7 +179,7 @@ public class Library {
         }
     }
 
-    public void showLibrarianActivity(){
+    public void showLibrarianActivity1(){
         for (Librarian l : librarians){
             int count=0;
             for (Borrow b : borrows){
@@ -164,9 +191,18 @@ public class Library {
         }
     }
 
-    public void addBooksInfo(String info){
-        for (Borrow b : borrows){
-            b.getBook().setInfo(info);
+    public void showLibrarianActivity2() {
+        for (Librarian librarian : librarians) {
+            int returnCount = 0;
+            for (Borrow borrow : borrows) {
+                if (borrow.isApproved() &&
+                        borrow.isReturned() &&
+                        borrow.getLibrarian().getLibrarianID() == librarian.getLibrarianID()) {
+                    returnCount++;
+                }
+            }
+            System.out.println("Librarian " + librarian.getFirstName() + " " + librarian.getLastName() +
+                    " (ID: " + librarian.getLibrarianID() + ") handled " + returnCount + " returned books.");
         }
     }
 
@@ -209,5 +245,27 @@ public class Library {
             System.out.println((i + 1) + ". " + book.getTitle() + " by " + book.getAuthor() + " - Borrowed " + count + " times");
         }
     }
+    public void reviewBorrowRequest(int requestId, boolean approve) {
+        if (requestId < 0 || requestId >= borrows.size()) {
+            System.out.println("Invalid request ID.");
+            return;
+        }
+        Borrow borrow = borrows.get(requestId);
+        if (borrow.isApproved() || borrow.isReturned()) {
+            System.out.println("This request has already been processed.");
+            return;
+        }
+        borrow.setApproved(approve);
+        if (approve) {
+            System.out.println("Request approved for student: " +
+                    borrow.getStudent().getFirstName() + " " +
+                    borrow.getStudent().getLastName() +
+                    " to borrow: " + borrow.getBook().getTitle());
+        } else {
+            System.out.println("Request rejected.");
+        }
+    }
+
+
 
 }

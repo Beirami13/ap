@@ -5,13 +5,11 @@ public class Book {
     private String author;
     private int year;
     private int pages;
-    private String info;
-    public Book(String title,String author, int year, int pages, String info){
+    public Book(String title,String author, int year, int pages){
         this.title=title;
         this.author=author;
         this.year=year;
         this.pages=pages;
-        this.info=info;
     }
     public String getTitle(){
 
@@ -29,15 +27,8 @@ public class Book {
 
         return pages;
     }
-    public String getInfo(){
-
-        return info;
-    }
-    public void setInfo(String info){
-        this.info=info;
-    }
     @Override
-    public String toString(){
-        return "Book "+title+" from "+author+" written in "+year+" in "+pages+" pages"+info;
+    public String toString() {
+        return "Book " + title + " from " + author + " written in " + year + " in " + pages + " pages.";
     }
 }

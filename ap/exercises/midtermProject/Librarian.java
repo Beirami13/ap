@@ -30,6 +30,6 @@ public class Librarian {
     }
     @Override
     public String toString() {
-        return "Full name: " + firstName + " " + lastName + " ID is " + librarianID;
+        return "Full name: " + firstName + " " + lastName + " (ID: " + librarianID + ")";
     }
 }

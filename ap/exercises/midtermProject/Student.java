@@ -43,10 +43,6 @@ public class Student {
 
         this.lastName=lastName;
     }
-    public void setStudentID(int studentID){
-
-        this.studentID=studentID;
-    }
     public void setMajor(String major){
 
         this.major=major;
