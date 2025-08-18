@@ -14,4 +14,8 @@ public class LibrarySystem {
         studentManager.registerStudent(name, studentId, username, password);
     }
 
+    public Student authenticateStudent(String username, String password) {
+        return studentManager.authenticateStudent(username, password);
+    }
+
 }
