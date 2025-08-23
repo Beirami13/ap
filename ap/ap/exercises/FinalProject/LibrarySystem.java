@@ -1,13 +1,18 @@
 package ap.exercises.FinalProject;
 
-
 public class LibrarySystem {
     private StudentManager studentManager;
+    private BookManager bookManager;
     private MenuHandler menuHandler;
 
     public LibrarySystem() {
         this.studentManager = new StudentManager();
+        this.menuHandler = new MenuHandler(this);
+        this.bookManager = new BookManager();
+    }
 
+    public int getStudentCount() {
+        return this.studentManager.getStudentCount();
     }
 
     public void registerStudent(String name, String studentId, String username, String password) {
@@ -18,4 +23,34 @@ public class LibrarySystem {
         return studentManager.authenticateStudent(username, password);
     }
 
+    public void SearchBooks() {
+        bookManager.searchBooks();
+    }
+
+    public void editStudentInformation(Student student) {
+        System.out.println("Not implemented.");
+    }
+
+    public void borrowBook(Student student) {
+        System.out.println("Not implemented.");
+    }
+
+    public void returnBook(Student student) {
+        System.out.println("Not implemented.");
+    }
+
+    public void displayAvailableBooks() {
+        System.out.println("Not implemented.");
+    }
+
+    public void start() {
+        menuHandler.displayMainMenu();
+    }
+
+
+
+    public static void main(String[] args) {
+        LibrarySystem system = new LibrarySystem();
+        system.start();
+    }
 }

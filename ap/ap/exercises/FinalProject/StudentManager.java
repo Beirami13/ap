@@ -8,9 +8,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class StudentManager {
+
     private List<Student> students = new ArrayList<>();
     private static final String STUDENT_FILE = "students.txt";
-    //register student
+
+    public StudentManager() {
+        loadStudentsFromFile();
+    }
+
     public void registerStudent(String name, String studentId, String username, String password) {
         if (isUsernameTaken(username)) {
             System.out.println("This username already exists. Please choose a different username.");
@@ -25,13 +30,27 @@ public class StudentManager {
     }
 
     private boolean isUsernameTaken(String username) {
-        loadStudentsFromFile();
         for (Student s : students) {
             if (s.getUsername().equalsIgnoreCase(username)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public void displayStudents() {
+        System.out.println("\n--- List of Registered Students ---");
+        if (students.isEmpty()) {
+            System.out.println("No students have registered yet.");
+            return;
+        }
+        for (Student student : students) {
+            System.out.println(student);
+        }
+    }
+
+    public int getStudentCount() {
+        return students.size();
     }
 
     private void saveStudent(Student student) {
@@ -44,11 +63,13 @@ public class StudentManager {
             System.out.println("Error saving student: " + e.getMessage());
         }
     }
-    //loginStudent
+
     private void loadStudentsFromFile() {
         students.clear();
+        File file = new File(STUDENT_FILE);
+        if (!file.exists()) return;
 
-        try (Scanner scanner = new Scanner(new File(STUDENT_FILE))) {
+        try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String[] data = scanner.nextLine().split(",");
                 if (data.length == 4) {
@@ -57,12 +78,11 @@ public class StudentManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error reading students file" );
+            System.out.println("Error reading students file: " + e.getMessage());
         }
     }
 
     public Student authenticateStudent(String username, String password) {
-        loadStudentsFromFile();
         return students.stream()
                 .filter(s -> s.getUsername().equals(username) && s.getPassword().equals(password))
                 .findFirst()
