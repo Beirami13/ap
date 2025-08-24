@@ -27,6 +27,10 @@ public class LibrarySystem {
         bookManager.searchBooks();
     }
 
+    public void searchBookByTitle() {
+        bookManager.searchBookByTitleForGuest();
+    }
+
     public void editStudentInformation(Student student) {
         System.out.println("Not implemented.");
     }

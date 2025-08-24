@@ -57,7 +57,8 @@ public class MenuHandler {
         while (true) {
             System.out.println("\n=== Guest Menu ===");
             System.out.println("1. View Registered Student Count");
-            System.out.println("2. Exit");
+            System.out.println("2. Search Book by Title");
+            System.out.println("3. Exit");
             System.out.print("Please enter your choice: ");
 
             int choice = getIntInput(1, 2);
@@ -68,6 +69,10 @@ public class MenuHandler {
                     System.out.println("\nTotal registered students: " + studentCount);
                     break;
                 case 2:
+                    librarySystem.searchBookByTitle();
+                    break;
+
+                case 3:
                     System.out.println("Exiting guest menu.");
                     return;
                 default:

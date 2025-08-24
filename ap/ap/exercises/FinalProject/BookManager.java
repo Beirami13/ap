@@ -160,4 +160,29 @@ public class BookManager {
             System.out.println("Error reading books file: " + e.getMessage());
         }
     }
+
+    public void searchBookByTitleForGuest() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter book title to search: ");
+        String title = scanner.nextLine().toLowerCase();
+
+        List<Book> results = books.stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(title))
+                .collect(Collectors.toList());
+
+        if (results.isEmpty()) {
+            System.out.println("No books found.");
+        } else {
+            System.out.println("\nSearch Results:");
+            for (Book b : results) {
+                System.out.println(
+                        "Title: " + b.getTitle() +
+                                ", Author: " + b.getAuthor() +
+                                ", Year: " + b.getYear() +
+                                ", Status: " + (b.isBorrowed() ? "Borrowed" : "Available")
+                );
+            }
+        }
+    }
+
 }
