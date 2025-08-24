@@ -32,7 +32,7 @@ public class LibrarySystem {
     }
 
     public void borrowBook(Student student) {
-        System.out.println("Not implemented.");
+        bookManager.borrowBook();
     }
 
     public void returnBook(Student student) {

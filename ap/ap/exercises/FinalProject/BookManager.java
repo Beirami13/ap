@@ -1,6 +1,7 @@
 package ap.exercises.FinalProject;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,24 +13,6 @@ public class BookManager {
 
     public BookManager() {
         loadBooksFromFile();
-    }
-
-    public void addBook(String title, String author, int year) {
-        Book book = new Book(title, author, year);
-        books.add(book);
-        saveBook(book);
-        System.out.println("Book added successfully!");
-    }
-
-    public void displayBooks() {
-        if (books.isEmpty()) {
-            System.out.println("No books in the library.");
-            return;
-        }
-        System.out.println("\n--- Library Books ---");
-        for (Book b : books) {
-            System.out.println(b);
-        }
     }
 
     public void searchBooks() {
@@ -93,14 +76,63 @@ public class BookManager {
         }
     }
 
-    private void saveBook(Book book) {
-        try (FileWriter writer = new FileWriter(BOOK_FILE, true)) {
-            writer.write(book.getTitle() + "," +
-                    book.getAuthor() + "," +
-                    book.getYear() + "," +
-                    book.isBorrowed() + "\n");
+    public void borrowBook() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter book title to borrow: ");
+        String title = scanner.nextLine().toLowerCase();
+
+        Book book = books.stream()
+                .filter(b -> b.getTitle().toLowerCase().equals(title))
+                .findFirst()
+                .orElse(null);
+
+        if (book == null) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        if (book.isBorrowed()) {
+            System.out.println("Sorry, this book is already borrowed.");
+            return;
+        }
+
+        try {
+            System.out.print("Enter start date (yyyy-MM-dd): ");
+            LocalDate startDate = LocalDate.parse(scanner.nextLine());
+
+            System.out.print("Enter end date (yyyy-MM-dd): ");
+            LocalDate endDate = LocalDate.parse(scanner.nextLine());
+
+            if (endDate.isBefore(startDate)) {
+                System.out.println("End date cannot be before start date.");
+                return;
+            }
+
+            book.setBorrowed(true);
+            book.setStartDate(startDate);
+            book.setEndDate(endDate);
+
+            saveAllBooks();
+
+            System.out.println("Book borrowed successfully from " + startDate + " to " + endDate);
+        } catch (Exception e) {
+            System.out.println("Invalid date format. Please use yyyy-MM-dd.");
+        }
+    }
+
+    private void saveAllBooks() {
+        try (FileWriter writer = new FileWriter(BOOK_FILE)) {
+            for (Book b : books) {
+                writer.write(b.getTitle() + "," +
+                        b.getAuthor() + "," +
+                        b.getYear() + "," +
+                        b.isBorrowed() + "," +
+                        (b.getStartDate() != null ? b.getStartDate() : "") + "," +
+                        (b.getEndDate() != null ? b.getEndDate() : "") + "\n");
+            }
         } catch (IOException e) {
-            System.out.println("Error saving book: " + e.getMessage());
+            System.out.println("Error saving books: " + e.getMessage());
         }
     }
 
@@ -112,9 +144,15 @@ public class BookManager {
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String[] data = scanner.nextLine().split(",");
-                if (data.length == 4) {
+                if (data.length >= 4) {
                     Book b = new Book(data[0], data[1], Integer.parseInt(data[2]));
                     b.setBorrowed(Boolean.parseBoolean(data[3]));
+
+                    if (data.length >= 6) {
+                        if (!data[4].isEmpty()) b.setStartDate(LocalDate.parse(data[4]));
+                        if (!data[5].isEmpty()) b.setEndDate(LocalDate.parse(data[5]));
+                    }
+
                     books.add(b);
                 }
             }
