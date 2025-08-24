@@ -16,25 +16,29 @@ public class MenuHandler {
     public void displayMainMenu() {
         while (true) {
             System.out.println("\n=== University Library Management System ===");
-            System.out.println("1. Student Registration");
-            System.out.println("2. Student Login");
-            System.out.println("3. View Registered Student Count");
-            System.out.println("4. Exit");
+            System.out.println("1. Guest Access");
+            System.out.println("2. Student Registration");
+            System.out.println("3. Student Login");
+            System.out.println("4. View Registered Student Count");
+            System.out.println("5. Exit");
             System.out.print("Please enter your choice: ");
 
-            int choice = getIntInput(1, 5);
+            int choice = getIntInput(1, 6);
 
             switch (choice) {
                 case 1:
-                    handleStudentRegistration();
+                    displayGuestMenu();
                     break;
                 case 2:
-                    handleStudentLogin();
+                    handleStudentRegistration();
                     break;
                 case 3:
-                    displayStudentCount();
+                    handleStudentLogin();
                     break;
                 case 4:
+                    displayStudentCount();
+                    break;
+                case 5:
                     System.out.println("Exiting system. Goodbye!");
                     return;
                 default:
@@ -48,6 +52,30 @@ public class MenuHandler {
         int studentCount = librarySystem.getStudentCount();
         System.out.println("\nTotal registered students: " + studentCount);
     }
+
+    public void displayGuestMenu() {
+        while (true) {
+            System.out.println("\n=== Guest Menu ===");
+            System.out.println("1. View Registered Student Count");
+            System.out.println("2. Exit");
+            System.out.print("Please enter your choice: ");
+
+            int choice = getIntInput(1, 2);
+
+            switch (choice) {
+                case 1:
+                    int studentCount = librarySystem.getStudentCount();
+                    System.out.println("\nTotal registered students: " + studentCount);
+                    break;
+                case 2:
+                    System.out.println("Exiting guest menu.");
+                    return;
+                default:
+                    System.out.println("Invalid option! Please try again.");
+            }
+        }
+    }
+
 
     private void handleStudentRegistration() {
         System.out.println("\n--- New Student Registration ---");
