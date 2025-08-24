@@ -58,10 +58,11 @@ public class MenuHandler {
             System.out.println("\n=== Guest Menu ===");
             System.out.println("1. View Registered Student Count");
             System.out.println("2. Search Book by Title");
-            System.out.println("3. Exit");
+            System.out.println("3. View Simple Library Statistics");
+            System.out.println("4. Exit");
             System.out.print("Please enter your choice: ");
 
-            int choice = getIntInput(1, 2);
+            int choice = getIntInput(1, 4);
 
             switch (choice) {
                 case 1:
@@ -71,8 +72,10 @@ public class MenuHandler {
                 case 2:
                     librarySystem.searchBookByTitle();
                     break;
-
                 case 3:
+                    librarySystem.displayLibraryStats();
+                    break;
+                case 4:
                     System.out.println("Exiting guest menu.");
                     return;
                 default:
@@ -80,6 +83,7 @@ public class MenuHandler {
             }
         }
     }
+
 
 
     private void handleStudentRegistration() {

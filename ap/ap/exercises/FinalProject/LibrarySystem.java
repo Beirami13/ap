@@ -36,7 +36,7 @@ public class LibrarySystem {
     }
 
     public void borrowBook(Student student) {
-        bookManager.borrowBook();
+        bookManager.borrowBook(student);
     }
 
     public void returnBook(Student student) {
@@ -49,6 +49,26 @@ public class LibrarySystem {
 
     public void start() {
         menuHandler.displayMainMenu();
+    }
+
+    public int getBookCount() {
+        return bookManager.getBookCount();
+    }
+
+    public int getTotalBorrows() {
+        return bookManager.getTotalBorrows();
+    }
+
+    public int getCurrentlyBorrowedCount() {
+        return bookManager.getCurrentlyBorrowedCount();
+    }
+
+    public void displayLibraryStats() {
+        System.out.println("\n--- Library Simple Statistics ---");
+        System.out.println("Total registered students: " + getStudentCount());
+        System.out.println("Total books: " + getBookCount());
+        System.out.println("Total borrow requests (historical): " + getTotalBorrows());
+        System.out.println("Currently borrowed books: " + getCurrentlyBorrowedCount());
     }
 
 

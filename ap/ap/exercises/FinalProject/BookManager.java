@@ -10,9 +10,33 @@ import java.util.stream.Collectors;
 public class BookManager {
     private List<Book> books = new ArrayList<>();
     private static final String BOOK_FILE = "books.txt";
+    private static final String BORROW_LOG = "borrows.txt";
 
     public BookManager() {
         loadBooksFromFile();
+    }
+
+    public int getBookCount() {
+        return books.size();
+    }
+
+    public int getTotalBorrows() {
+        File f = new File(BORROW_LOG);
+        if (!f.exists()) return 0;
+        int count = 0;
+        try (Scanner sc = new Scanner(f)) {
+            while (sc.hasNextLine()) {
+                sc.nextLine();
+                count++;
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading borrow log: " + e.getMessage());
+        }
+        return count;
+    }
+
+    public int getCurrentlyBorrowedCount() {
+        return (int) books.stream().filter(Book::isBorrowed).count();
     }
 
     public void searchBooks() {
@@ -76,7 +100,7 @@ public class BookManager {
         }
     }
 
-    public void borrowBook() {
+    public void borrowBook(Student student) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter book title to borrow: ");
@@ -114,10 +138,21 @@ public class BookManager {
             book.setEndDate(endDate);
 
             saveAllBooks();
+            appendBorrowLog(student, book, startDate, endDate);
 
             System.out.println("Book borrowed successfully from " + startDate + " to " + endDate);
         } catch (Exception e) {
             System.out.println("Invalid date format. Please use yyyy-MM-dd.");
+        }
+    }
+
+    private void appendBorrowLog(Student student, Book book, LocalDate start, LocalDate end) {
+        try (FileWriter writer = new FileWriter(BORROW_LOG, true)) {
+            String safeTitle = book.getTitle().replace(",", " ");
+            writer.write(student.getStudentId() + "," + student.getUsername() + "," +
+                    safeTitle + "," + start + "," + end + "\n");
+        } catch (IOException e) {
+            System.out.println("Error logging borrow: " + e.getMessage());
         }
     }
 
@@ -184,5 +219,4 @@ public class BookManager {
             }
         }
     }
-
 }
