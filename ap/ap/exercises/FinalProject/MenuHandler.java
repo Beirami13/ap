@@ -19,8 +19,9 @@ public class MenuHandler {
             System.out.println("1. Guest Access");
             System.out.println("2. Student Registration");
             System.out.println("3. Student Login");
-            System.out.println("4. View Registered Student Count");
-            System.out.println("5. Exit");
+            System.out.println("4. Staff Login");
+            System.out.println("5. View Registered Student Count");
+            System.out.println("6. Exit");
             System.out.print("Please enter your choice: ");
 
             int choice = getIntInput(1, 6);
@@ -36,9 +37,12 @@ public class MenuHandler {
                     handleStudentLogin();
                     break;
                 case 4:
-                    displayStudentCount();
+                    displayStaffLoginMenu();
                     break;
                 case 5:
+                    displayStudentCount();
+                    break;
+                case 6:
                     System.out.println("Exiting system. Goodbye!");
                     return;
                 default:
@@ -166,6 +170,43 @@ public class MenuHandler {
             }
         }
     }
+
+    public void displayStaffLoginMenu() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Staff Login ---");
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        Staff staff = librarySystem.authenticateStaff(username, password);
+        if (staff != null) {
+            System.out.println("Login successful! Welcome, " + staff.getName());
+            displayStaffDashboard(staff);
+        } else {
+            System.out.println("Invalid username or password.");
+        }
+    }
+
+    private void displayStaffDashboard(Staff staff) {
+        while (true) {
+            System.out.println("\n=== Staff Dashboard ===");
+            System.out.println("1. View Statistics");
+            System.out.println("2. Logout");
+            System.out.print("Choose an option: ");
+            int choice = getIntInput(1, 2);
+
+            switch (choice) {
+                case 1:
+                    librarySystem.displayLibraryStats();
+                    break;
+                case 2:
+                    System.out.println("Logged out successfully.");
+                    return;
+            }
+        }
+    }
+
 
     private int getIntInput(int min, int max) {
         while (true) {

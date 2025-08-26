@@ -4,11 +4,13 @@ public class LibrarySystem {
     private StudentManager studentManager;
     private BookManager bookManager;
     private MenuHandler menuHandler;
+    private StaffManager staffManager;
 
     public LibrarySystem() {
         this.studentManager = new StudentManager();
         this.menuHandler = new MenuHandler(this);
         this.bookManager = new BookManager();
+        this.staffManager = new StaffManager();
     }
 
     public int getStudentCount() {
@@ -71,6 +73,9 @@ public class LibrarySystem {
         System.out.println("Currently borrowed books: " + getCurrentlyBorrowedCount());
     }
 
+    public Staff authenticateStaff(String username, String password) {
+        return staffManager.authenticateStaff(username, password);
+    }
 
 
     public static void main(String[] args) {
