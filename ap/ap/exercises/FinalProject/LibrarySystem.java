@@ -77,6 +77,11 @@ public class LibrarySystem {
         return staffManager.authenticateStaff(username, password);
     }
 
+    public void changeStaffPassword(Staff staff, String newPassword) {
+        staffManager.changePassword(staff, newPassword);
+    }
+
+
 
     public static void main(String[] args) {
         LibrarySystem system = new LibrarySystem();

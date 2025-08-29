@@ -21,8 +21,7 @@ public class StaffManager {
 
         Staff staff = new Staff(name, staffId, username, password);
         staffList.add(staff);
-        saveStaff(staff);
-
+        saveAllStaff();
         System.out.println("Staff registered successfully!");
     }
 
@@ -30,12 +29,26 @@ public class StaffManager {
         return staffList.stream().anyMatch(s -> s.getUsername().equalsIgnoreCase(username));
     }
 
-    private void saveStaff(Staff staff) {
-        try (FileWriter writer = new FileWriter(STAFF_FILE, true)) {
-            writer.write(staff.getName() + "," + staff.getStaffId() + "," + staff.getUsername() + "," + staff.getPassword() + "\n");
-        } catch (IOException e) {
-            System.out.println("Error saving staff: " + e.getMessage());
-        }
+    public Staff authenticateStaff(String username, String password) {
+        return staffList.stream()
+                .filter(s -> s.getUsername().equals(username) && s.getPassword().equals(password))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public int getStaffCount() {
+        return staffList.size();
+    }
+
+    // تغییر رمز عبور
+    public void changePassword(Staff staff, String newPassword) {
+        staffList.stream()
+                .filter(s -> s.getUsername().equals(staff.getUsername()))
+                .findFirst()
+                .ifPresent(s -> s.setPassword(newPassword));
+
+        saveAllStaff();
+        System.out.println("Password changed successfully!");
     }
 
     private void loadStaffFromFile() {
@@ -56,14 +69,13 @@ public class StaffManager {
         }
     }
 
-    public Staff authenticateStaff(String username, String password) {
-        return staffList.stream()
-                .filter(s -> s.getUsername().equals(username) && s.getPassword().equals(password))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public int getStaffCount() {
-        return staffList.size();
+    private void saveAllStaff() {
+        try (FileWriter writer = new FileWriter(STAFF_FILE)) {
+            for (Staff s : staffList) {
+                writer.write(s.getName() + "," + s.getStaffId() + "," + s.getUsername() + "," + s.getPassword() + "\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving staff: " + e.getMessage());
+        }
     }
 }

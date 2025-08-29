@@ -192,20 +192,27 @@ public class MenuHandler {
         while (true) {
             System.out.println("\n=== Staff Dashboard ===");
             System.out.println("1. View Statistics");
-            System.out.println("2. Logout");
+            System.out.println("2. Change Password");
+            System.out.println("3. Logout");
             System.out.print("Choose an option: ");
-            int choice = getIntInput(1, 2);
+            int choice = getIntInput(1, 3);
 
             switch (choice) {
                 case 1:
                     librarySystem.displayLibraryStats();
                     break;
                 case 2:
+                    System.out.print("Enter new password: ");
+                    String newPassword = scanner.nextLine();
+                    librarySystem.changeStaffPassword(staff, newPassword);
+                    break;
+                case 3:
                     System.out.println("Logged out successfully.");
                     return;
             }
         }
     }
+
 
 
     private int getIntInput(int min, int max) {
