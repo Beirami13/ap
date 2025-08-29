@@ -193,9 +193,10 @@ public class MenuHandler {
             System.out.println("\n=== Staff Dashboard ===");
             System.out.println("1. View Statistics");
             System.out.println("2. Change Password");
-            System.out.println("3. Logout");
+            System.out.println("3. Register New Book");
+            System.out.println("4. Logout");
             System.out.print("Choose an option: ");
-            int choice = getIntInput(1, 3);
+            int choice = getIntInput(1, 4);
 
             switch (choice) {
                 case 1:
@@ -207,11 +208,15 @@ public class MenuHandler {
                     librarySystem.changeStaffPassword(staff, newPassword);
                     break;
                 case 3:
+                    librarySystem.registerBook();
+                    break;
+                case 4:
                     System.out.println("Logged out successfully.");
                     return;
             }
         }
     }
+
 
 
 

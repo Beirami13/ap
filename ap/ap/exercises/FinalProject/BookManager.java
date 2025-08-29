@@ -219,4 +219,30 @@ public class BookManager {
             }
         }
     }
+
+    public void registerBook() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter book title: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Enter author name: ");
+        String author = scanner.nextLine();
+
+        System.out.print("Enter publication year: ");
+        int year;
+        try {
+            year = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Year must be a number.");
+            return;
+        }
+
+        Book book = new Book(title, author, year);
+        books.add(book);
+        saveAllBooks();
+
+        System.out.println("Book registered successfully!");
+    }
+
 }

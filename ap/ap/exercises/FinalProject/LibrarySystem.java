@@ -81,6 +81,9 @@ public class LibrarySystem {
         staffManager.changePassword(staff, newPassword);
     }
 
+    public void registerBook() {
+        bookManager.registerBook();
+    }
 
 
     public static void main(String[] args) {
