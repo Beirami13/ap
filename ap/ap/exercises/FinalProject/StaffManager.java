@@ -40,7 +40,6 @@ public class StaffManager {
         return staffList.size();
     }
 
-    // تغییر رمز عبور
     public void changePassword(Staff staff, String newPassword) {
         staffList.stream()
                 .filter(s -> s.getUsername().equals(staff.getUsername()))
