@@ -16,6 +16,7 @@ public class StaffManager {
             saveAllStaff();
         }
     }
+
     private void loadDefaultStaff() {
         staffList.add(new Staff("Abdi", "1", "staff1", "1234"));
         staffList.add(new Staff("Rad", "2", "staff2", "1383"));
