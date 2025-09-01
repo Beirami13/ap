@@ -1,5 +1,7 @@
 package ap.exercises.FinalProject;
 
+import java.util.Scanner;
+
 public class LibrarySystem {
     private StudentManager studentManager;
     private BookManager bookManager;
@@ -8,13 +10,22 @@ public class LibrarySystem {
 
     public LibrarySystem() {
         this.studentManager = new StudentManager();
-        this.menuHandler = new MenuHandler(this);
         this.bookManager = new BookManager();
         this.staffManager = new StaffManager();
+        this.menuHandler = new MenuHandler(this);
     }
 
     public int getStudentCount() {
-        return this.studentManager.getStudentCount();
+        return studentManager.getStudentCount();
+    }
+    public int getBookCount() {
+        return bookManager.getBookCount();
+    }
+    public int getTotalBorrows() {
+        return bookManager.getTotalBorrows();
+    }
+    public int getCurrentlyBorrowedCount() {
+        return bookManager.getCurrentlyBorrowedCount();
     }
 
     public void registerStudent(String name, String studentId, String username, String password) {
@@ -25,16 +36,18 @@ public class LibrarySystem {
         return studentManager.authenticateStudent(username, password);
     }
 
-    public void SearchBooks() {
+    public void searchBooks() {
         bookManager.searchBooks();
     }
-
-    public void searchBookByTitle() {
+    public void searchBookByTitleForGuest() {
         bookManager.searchBookByTitleForGuest();
     }
 
-    public void editStudentInformation(Student student) {
-        System.out.println("Not implemented.");
+    public void registerBook() {
+        bookManager.registerBook();
+    }
+    public void editBook() {
+        bookManager.editBook();
     }
 
     public void borrowBook(Student student) {
@@ -42,27 +55,14 @@ public class LibrarySystem {
     }
 
     public void returnBook(Student student) {
-        System.out.println("Not implemented.");
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter book ID to return: ");
+        String bookId = scanner.nextLine();
+        bookManager.returnBook(student, bookId);
     }
 
     public void displayAvailableBooks() {
-        System.out.println("Not implemented.");
-    }
-
-    public void start() {
-        menuHandler.displayMainMenu();
-    }
-
-    public int getBookCount() {
-        return bookManager.getBookCount();
-    }
-
-    public int getTotalBorrows() {
-        return bookManager.getTotalBorrows();
-    }
-
-    public int getCurrentlyBorrowedCount() {
-        return bookManager.getCurrentlyBorrowedCount();
+        bookManager.displayAvailableBooks();
     }
 
     public void displayLibraryStats() {
@@ -81,10 +81,22 @@ public class LibrarySystem {
         staffManager.changePassword(staff, newPassword);
     }
 
-    public void registerBook() {
-        bookManager.registerBook();
+    public void editStudentInformation(Student student) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Edit Student Information ---");
+        System.out.println("Current information: " + student);
+
+        System.out.print("New name (leave blank to keep current): ");
+        String newName = scanner.nextLine();
+
+        System.out.print("New password (leave blank to keep current): ");
+        String newPassword = scanner.nextLine();
+
+        studentManager.updateStudent(student, newName, newPassword);
+        System.out.println("Information updated successfully!");
     }
 
+    public void start() { menuHandler.displayMainMenu(); }
 
     public static void main(String[] args) {
         LibrarySystem system = new LibrarySystem();

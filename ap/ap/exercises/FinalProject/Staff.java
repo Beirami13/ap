@@ -7,18 +7,26 @@ public class Staff {
     private String password;
 
     public Staff(String name, String staffId, String username, String password) {
-        this.name = name;
-        this.staffId = staffId;
-        this.username = username;
-        this.password = password;
+        this.name = name != null ? name.trim() : "";
+        this.staffId = staffId != null ? staffId.trim() : "";
+        this.username = username != null ? username.trim() : "";
+        this.password = password != null ? password : "";
     }
 
-    public String getName() { return name; }
-    public String getStaffId() { return staffId; }
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
+    public String getName() {
+        return name;
+    }
+    public String getStaffId() {
+        return staffId;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public String getPassword() {
+        return password;
+    }
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password != null ? password : "";
     }
 
     @Override

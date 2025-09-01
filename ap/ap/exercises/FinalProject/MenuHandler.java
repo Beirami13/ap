@@ -25,7 +25,6 @@ public class MenuHandler {
             System.out.print("Please enter your choice: ");
 
             int choice = getIntInput(1, 6);
-
             switch (choice) {
                 case 1:
                     displayGuestMenu();
@@ -65,16 +64,13 @@ public class MenuHandler {
             System.out.println("3. View Simple Library Statistics");
             System.out.println("4. Exit");
             System.out.print("Please enter your choice: ");
-
             int choice = getIntInput(1, 4);
-
             switch (choice) {
                 case 1:
-                    int studentCount = librarySystem.getStudentCount();
-                    System.out.println("\nTotal registered students: " + studentCount);
+                    System.out.println("\nTotal registered students: " + librarySystem.getStudentCount());
                     break;
                 case 2:
-                    librarySystem.searchBookByTitle();
+                    librarySystem.searchBookByTitleForGuest();
                     break;
                 case 3:
                     librarySystem.displayLibraryStats();
@@ -88,37 +84,20 @@ public class MenuHandler {
         }
     }
 
-
-
     private void handleStudentRegistration() {
         System.out.println("\n--- New Student Registration ---");
-
-        System.out.print("Student name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Student ID: ");
-        String studentId = scanner.nextLine();
-
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-
+        System.out.print("Student name: "); String name = scanner.nextLine();
+        System.out.print("Student ID: "); String studentId = scanner.nextLine();
+        System.out.print("Username: "); String username = scanner.nextLine();
+        System.out.print("Password: "); String password = scanner.nextLine();
         librarySystem.registerStudent(name, studentId, username, password);
     }
 
     private void handleStudentLogin() {
         System.out.println("\n--- Student Login ---");
-
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-
+        System.out.print("Username: "); String username = scanner.nextLine();
+        System.out.print("Password: "); String password = scanner.nextLine();
         currentUser = librarySystem.authenticateStudent(username, password);
-
         if (currentUser != null) {
             System.out.println("Login successful! Welcome, " + currentUser.getName());
             displayLoggedInStudentMenu();
@@ -138,19 +117,16 @@ public class MenuHandler {
             System.out.println("6. View Available Books");
             System.out.println("7. Logout");
             System.out.print("Please enter your choice: ");
-
-            int choice = getIntInput(1, 6);
-
+            int choice = getIntInput(1, 7);
             switch (choice) {
                 case 1:
-                    System.out.println("\n--- My Information ---");
-                    System.out.println(currentUser);
+                    System.out.println("\n--- My Information ---"); System.out.println(currentUser);
                     break;
                 case 2:
                     librarySystem.editStudentInformation(currentUser);
                     break;
                 case 3:
-                    librarySystem.SearchBooks();
+                    librarySystem.searchBooks();
                     break;
                 case 4:
                     librarySystem.borrowBook(currentUser);
@@ -162,8 +138,7 @@ public class MenuHandler {
                     librarySystem.displayAvailableBooks();
                     break;
                 case 7:
-                    currentUser = null;
-                    System.out.println("Logged out successfully.");
+                    currentUser = null; System.out.println("Logged out successfully.");
                     return;
                 default:
                     System.out.println("Invalid option! Please try again.");
@@ -172,13 +147,9 @@ public class MenuHandler {
     }
 
     public void displayStaffLoginMenu() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("\n--- Staff Login ---");
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-
+        System.out.print("Username: "); String username = scanner.nextLine();
+        System.out.print("Password: "); String password = scanner.nextLine();
         Staff staff = librarySystem.authenticateStaff(username, password);
         if (staff != null) {
             System.out.println("Login successful! Welcome, " + staff.getName());
@@ -194,10 +165,10 @@ public class MenuHandler {
             System.out.println("1. View Statistics");
             System.out.println("2. Change Password");
             System.out.println("3. Register New Book");
-            System.out.println("4. Logout");
+            System.out.println("4. Edit Existing Book");
+            System.out.println("5. Logout");
             System.out.print("Choose an option: ");
-            int choice = getIntInput(1, 4);
-
+            int choice = getIntInput(1, 5);
             switch (choice) {
                 case 1:
                     librarySystem.displayLibraryStats();
@@ -211,22 +182,20 @@ public class MenuHandler {
                     librarySystem.registerBook();
                     break;
                 case 4:
+                    librarySystem.editBook();
+                    break;
+                case 5:
                     System.out.println("Logged out successfully.");
                     return;
             }
         }
     }
 
-
-
-
     private int getIntInput(int min, int max) {
         while (true) {
             try {
                 int input = Integer.parseInt(scanner.nextLine());
-                if (input >= min && input <= max) {
-                    return input;
-                }
+                if (input >= min && input <= max) return input;
                 System.out.printf("Please enter a number between %d and %d: ", min, max);
             } catch (NumberFormatException e) {
                 System.out.print("Invalid input. Please enter a number: ");

@@ -11,6 +11,14 @@ public class StaffManager {
 
     public StaffManager() {
         loadStaffFromFile();
+        if (staffList.isEmpty()) {
+            loadDefaultStaff();
+            saveAllStaff();
+        }
+    }
+    private void loadDefaultStaff() {
+        staffList.add(new Staff("Abdi", "1", "staff1", "1234"));
+        staffList.add(new Staff("Rad", "2", "staff2", "1383"));
     }
 
     public void registerStaff(String name, String staffId, String username, String password) {
