@@ -22,6 +22,7 @@ public class StaffManager {
         staffList.add(new Staff("Rad", "2", "staff2", "1383"));
     }
 
+
     public void registerStaff(String name, String staffId, String username, String password) {
         if (isUsernameTaken(username)) {
             System.out.println("Username already exists! Choose a different one.");
