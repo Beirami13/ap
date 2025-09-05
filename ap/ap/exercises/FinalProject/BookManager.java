@@ -14,6 +14,7 @@ public class BookManager {
 
     public BookManager() {
         loadBooksFromFile();
+        loadBorrowRequests();
     }
 
     public int getBookCount() {
@@ -104,11 +105,7 @@ public class BookManager {
         System.out.print("Enter book ID to borrow: ");
         String bookId = scanner.nextLine().trim();
 
-        Book book = books.stream()
-                .filter(b -> b.getId().equals(bookId))
-                .findFirst()
-                .orElse(null);
-
+        Book book = findBookById(bookId);
         if (book == null) {
             System.out.println("Book not found.");
             return;
@@ -130,14 +127,8 @@ public class BookManager {
                 return;
             }
 
-            book.setBorrowed(true);
-            book.setStartDate(startDate);
-            book.setEndDate(endDate);
+            submitBorrowRequest(student, bookId, startDate, endDate);
 
-            saveAllBooks();
-            appendBorrowLog(student, book, startDate, endDate);
-
-            System.out.println("Book borrowed successfully from " + startDate + " to " + endDate);
         } catch (Exception e) {
             System.out.println("Invalid date format. Please use yyyy-MM-dd.");
         }
@@ -319,5 +310,112 @@ public class BookManager {
     private String escapeCsv(String value) {
         if (value == null) return "";
         return value.replace(",", " ");
+    }
+
+    private List<BorrowRequest> borrowRequests = new ArrayList<>();
+    private static final String REQUESTS_FILE = "borrow_requests.txt";
+
+    public void submitBorrowRequest(Student student, String bookId, LocalDate startDate, LocalDate endDate) {
+        String requestId = "REQ_" + System.currentTimeMillis();
+        BorrowRequest request = new BorrowRequest(requestId, student.getStudentId(), bookId, startDate, endDate);
+        borrowRequests.add(request);
+        saveBorrowRequest(request);
+        System.out.println("Borrow request submitted successfully! Request ID: " + requestId);
+    }
+
+    private void saveBorrowRequest(BorrowRequest request) {
+        try (FileWriter writer = new FileWriter(REQUESTS_FILE, true)) {
+            writer.write(request.getRequestId() + "," +
+                    request.getStudentId() + "," +
+                    request.getBookId() + "," +
+                    request.getStartDate() + "," +
+                    request.getEndDate() + "," +
+                    request.getStatus() + "\n");
+        } catch (IOException e) {
+            System.out.println("Error saving borrow request: " + e.getMessage());
+        }
+    }
+
+    public void loadBorrowRequests() {
+        borrowRequests.clear();
+        File file = new File(REQUESTS_FILE);
+        if (!file.exists()) return;
+
+        try (Scanner sc = new Scanner(file)) {
+            while (sc.hasNextLine()) {
+                String[] data = sc.nextLine().split(",", -1);
+                if (data.length >= 6) {
+                    BorrowRequest request = new BorrowRequest(
+                            data[0].trim(), data[1].trim(), data[2].trim(),
+                            LocalDate.parse(data[3].trim()), LocalDate.parse(data[4].trim())
+                    );
+                    request.setStatus(data[5].trim());
+                    borrowRequests.add(request);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading borrow requests: " + e.getMessage());
+        }
+    }
+
+    public void approveBorrowRequests() {
+        LocalDate today = LocalDate.now();
+        List<BorrowRequest> requestsToApprove = borrowRequests.stream()
+                .filter(r -> r.getStatus().equals("PENDING"))
+                .filter(r -> r.getStartDate().isEqual(today) || r.getStartDate().isEqual(today.minusDays(1)))
+                .collect(Collectors.toList());
+
+        if (requestsToApprove.isEmpty()) {
+            System.out.println("No pending requests for today or yesterday.");
+            return;
+        }
+
+        System.out.println("\n--- Pending Borrow Requests for Approval ---");
+        for (BorrowRequest request : requestsToApprove) {
+            System.out.println(request);
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Approve this request? (Y/N): ");
+            String decision = scanner.nextLine().trim().toUpperCase();
+
+            if (decision.equals("Y")) {
+                request.setStatus("APPROVED");
+                Book book = findBookById(request.getBookId());
+                if (book != null) {
+                    book.setBorrowed(true);
+                    book.setStartDate(request.getStartDate());
+                    book.setEndDate(request.getEndDate());
+                }
+                System.out.println("Request approved successfully!");
+            } else {
+                request.setStatus("REJECTED");
+                System.out.println("Request rejected.");
+            }
+        }
+
+        saveAllBorrowRequests();
+        saveAllBooks();
+    }
+
+    private Book findBookById(String bookId) {
+        return books.stream()
+                .filter(b -> b.getId().equals(bookId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void saveAllBorrowRequests() {
+        try (FileWriter writer = new FileWriter(REQUESTS_FILE)) {
+            for (BorrowRequest request : borrowRequests) {
+                writer.write(request.getRequestId() + "," +
+                        request.getStudentId() + "," +
+                        request.getBookId() + "," +
+                        request.getStartDate() + "," +
+                        request.getEndDate() + "," +
+                        request.getStatus() + "\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving borrow requests: " + e.getMessage());
+        }
     }
 }

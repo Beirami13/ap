@@ -166,9 +166,10 @@ public class MenuHandler {
             System.out.println("2. Change Password");
             System.out.println("3. Register New Book");
             System.out.println("4. Edit Existing Book");
-            System.out.println("5. Logout");
+            System.out.println("5. Approve Borrow Requests");
+            System.out.println("6. Logout");
             System.out.print("Choose an option: ");
-            int choice = getIntInput(1, 5);
+            int choice = getIntInput(1, 6);
             switch (choice) {
                 case 1:
                     librarySystem.displayLibraryStats();
@@ -185,6 +186,9 @@ public class MenuHandler {
                     librarySystem.editBook();
                     break;
                 case 5:
+                    librarySystem.approveBorrowRequests();
+                    break;
+                case 6:
                     System.out.println("Logged out successfully.");
                     return;
             }

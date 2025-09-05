@@ -13,6 +13,7 @@ public class LibrarySystem {
         this.bookManager = new BookManager();
         this.staffManager = new StaffManager();
         this.menuHandler = new MenuHandler(this);
+        this.bookManager.loadBorrowRequests();
     }
 
     public int getStudentCount() {
@@ -94,6 +95,10 @@ public class LibrarySystem {
 
         studentManager.updateStudent(student, newName, newPassword);
         System.out.println("Information updated successfully!");
+    }
+
+    public void approveBorrowRequests() {
+        bookManager.approveBorrowRequests();
     }
 
     public void start() { menuHandler.displayMainMenu(); }
