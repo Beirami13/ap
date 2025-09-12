@@ -86,17 +86,23 @@ public class MenuHandler {
 
     private void handleStudentRegistration() {
         System.out.println("\n--- New Student Registration ---");
-        System.out.print("Student name: "); String name = scanner.nextLine();
-        System.out.print("Student ID: "); String studentId = scanner.nextLine();
-        System.out.print("Username: "); String username = scanner.nextLine();
-        System.out.print("Password: "); String password = scanner.nextLine();
+        System.out.print("Student name: ");
+        String name = scanner.nextLine();
+        System.out.print("Student ID: ");
+        String studentId = scanner.nextLine();
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
         librarySystem.registerStudent(name, studentId, username, password);
     }
 
     private void handleStudentLogin() {
         System.out.println("\n--- Student Login ---");
-        System.out.print("Username: "); String username = scanner.nextLine();
-        System.out.print("Password: "); String password = scanner.nextLine();
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
         currentUser = librarySystem.authenticateStudent(username, password);
         if (currentUser != null) {
             System.out.println("Login successful! Welcome, " + currentUser.getName());
@@ -120,7 +126,8 @@ public class MenuHandler {
             int choice = getIntInput(1, 7);
             switch (choice) {
                 case 1:
-                    System.out.println("\n--- My Information ---"); System.out.println(currentUser);
+                    System.out.println("\n--- My Information ---");
+                    System.out.println(currentUser);
                     break;
                 case 2:
                     librarySystem.editStudentInformation(currentUser);
@@ -138,7 +145,8 @@ public class MenuHandler {
                     librarySystem.displayAvailableBooks();
                     break;
                 case 7:
-                    currentUser = null; System.out.println("Logged out successfully.");
+                    currentUser = null;
+                    System.out.println("Logged out successfully.");
                     return;
                 default:
                     System.out.println("Invalid option! Please try again.");
@@ -148,8 +156,10 @@ public class MenuHandler {
 
     public void displayStaffLoginMenu() {
         System.out.println("\n--- Staff Login ---");
-        System.out.print("Username: "); String username = scanner.nextLine();
-        System.out.print("Password: "); String password = scanner.nextLine();
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
         Staff staff = librarySystem.authenticateStaff(username, password);
         if (staff != null) {
             System.out.println("Login successful! Welcome, " + staff.getName());
@@ -167,9 +177,12 @@ public class MenuHandler {
             System.out.println("3. Register New Book");
             System.out.println("4. Edit Existing Book");
             System.out.println("5. Approve Borrow Requests");
-            System.out.println("6. Logout");
+            System.out.println("6. View Student Borrow History");
+            System.out.println("7. Toggle Student Status");
+            System.out.println("8. Receive Returned Book");
+            System.out.println("9. Logout");
             System.out.print("Choose an option: ");
-            int choice = getIntInput(1, 6);
+            int choice = getIntInput(1, 9);
             switch (choice) {
                 case 1:
                     librarySystem.displayLibraryStats();
@@ -189,6 +202,26 @@ public class MenuHandler {
                     librarySystem.approveBorrowRequests();
                     break;
                 case 6:
+                    System.out.print("Enter student ID to view history: ");
+                    String studentId = scanner.nextLine();
+                    librarySystem.viewStudentBorrowHistory(studentId);
+                    break;
+                case 7:
+                    System.out.print("Enter student ID to toggle status: ");
+                    String toggleStudentId = scanner.nextLine();
+                    Student studentToToggle = librarySystem.findStudentById(toggleStudentId);
+                    if (studentToToggle != null) {
+                        librarySystem.toggleStudentStatus(studentToToggle);
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+                case 8:
+                    System.out.print("Enter book ID to receive: ");
+                    String receiveBookId = scanner.nextLine();
+                    librarySystem.receiveReturnedBook(receiveBookId);
+                    break;
+                case 9:
                     System.out.println("Logged out successfully.");
                     return;
             }

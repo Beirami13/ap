@@ -8,10 +8,9 @@ public class BorrowRequest {
     private String bookId;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String status; // PENDING, APPROVED, REJECTED
+    private String status;
 
-    public BorrowRequest(String requestId, String studentId, String bookId, LocalDate startDate, LocalDate endDate)
-    {
+    public BorrowRequest(String requestId, String studentId, String bookId, LocalDate startDate, LocalDate endDate) {
         this.requestId = requestId;
         this.studentId = studentId;
         this.bookId = bookId;
@@ -20,26 +19,17 @@ public class BorrowRequest {
         this.status = "PENDING";
     }
 
-    public String getRequestId() {
-        return requestId;
-    }
-    public String getStudentId() {
-        return studentId;
-    }
-    public String getBookId() {
-        return bookId;
-    }
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-    public String getStatus() {
-        return status;
-    }
+    public String getRequestId() { return requestId; }
+    public String getStudentId() { return studentId; }
+    public String getBookId() { return bookId; }
+    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public String getStatus() { return status; }
+
     public void setStatus(String status) {
-        this.status = status;
+        if (status != null && (status.equals("PENDING") || status.equals("APPROVED") || status.equals("REJECTED"))) {
+            this.status = status;
+        }
     }
 
     @Override

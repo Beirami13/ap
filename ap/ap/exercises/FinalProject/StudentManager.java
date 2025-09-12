@@ -26,8 +26,10 @@ public class StudentManager {
 
     private boolean isUsernameTaken(String username) {
         if (username == null) return false;
-        for (Student s : students) {
-            if (s.getUsername().equalsIgnoreCase(username.trim())) return true;
+        for (Student student : students) {
+            if (student.getUsername().equalsIgnoreCase(username.trim())) {
+                return true;
+            }
         }
         return false;
     }
@@ -51,13 +53,19 @@ public class StudentManager {
         students.clear();
         File file = new File(STUDENT_FILE);
         if (!file.exists()) return;
-        try (Scanner sc = new Scanner(file)) {
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
                 String[] parts = line.split(",", -1);
                 if (parts.length >= 4) {
-                    Student s = new Student(parts[0].trim(), parts[1].trim(), parts[2].trim(), parts[3]);
-                    students.add(s);
+                    Student student = new Student(
+                            parts[0].trim(),
+                            parts[1].trim(),
+                            parts[2].trim(),
+                            parts[3].trim()
+                    );
+                    students.add(student);
                 }
             }
         } catch (IOException e) {
@@ -67,9 +75,9 @@ public class StudentManager {
 
     public Student authenticateStudent(String username, String password) {
         if (username == null) return null;
-        for (Student s : students) {
-            if (s.getUsername().equals(username.trim()) && s.getPassword().equals(password)) {
-                return s;
+        for (Student student : students) {
+            if (student.getUsername().equals(username.trim()) && student.getPassword().equals(password)) {
+                return student;
             }
         }
         return null;
@@ -97,14 +105,23 @@ public class StudentManager {
 
     private void saveAllStudents() {
         try (FileWriter writer = new FileWriter(STUDENT_FILE)) {
-            for (Student s : students) {
-                writer.write(escapeCsv(s.getName()) + "," +
-                        escapeCsv(s.getStudentId()) + "," +
-                        escapeCsv(s.getUsername()) + "," +
-                        escapeCsv(s.getPassword()) + "\n");
+            for (Student student : students) {
+                writer.write(escapeCsv(student.getName()) + "," +
+                        escapeCsv(student.getStudentId()) + "," +
+                        escapeCsv(student.getUsername()) + "," +
+                        escapeCsv(student.getPassword()) + "\n");
             }
         } catch (IOException e) {
             System.out.println("Error saving students: " + e.getMessage());
         }
+    }
+
+    public Student findStudentById(String studentId) {
+        for (Student student : students) {
+            if (student.getStudentId().equals(studentId)) {
+                return student;
+            }
+        }
+        return null;
     }
 }

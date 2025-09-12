@@ -17,38 +17,16 @@ public class StaffManager {
         }
     }
 
-
     private void loadDefaultStaff() {
         staffList.add(new Staff("Abdi", "1", "staff1", "1234"));
         staffList.add(new Staff("Rad", "2", "staff2", "1383"));
     }
 
-
-    public void registerStaff(String name, String staffId, String username, String password) {
-        if (isUsernameTaken(username)) {
-            System.out.println("Username already exists! Choose a different one.");
-            return;
-        }
-
-        Staff staff = new Staff(name, staffId, username, password);
-        staffList.add(staff);
-        saveAllStaff();
-        System.out.println("Staff registered successfully!");
-    }
-
-    private boolean isUsernameTaken(String username) {
-        return staffList.stream().anyMatch(s -> s.getUsername().equalsIgnoreCase(username));
-    }
-
     public Staff authenticateStaff(String username, String password) {
         return staffList.stream()
-                .filter(s -> s.getUsername().equals(username) && s.getPassword().equals(password))
+                .filter(staff -> staff.getUsername().equals(username) && staff.getPassword().equals(password))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public int getStaffCount() {
-        return staffList.size();
     }
 
     public void changePassword(Staff staff, String newPassword) {
@@ -66,12 +44,12 @@ public class StaffManager {
         File file = new File(STAFF_FILE);
         if (!file.exists()) return;
 
-        try (Scanner sc = new Scanner(file)) {
-            while (sc.hasNextLine()) {
-                String[] data = sc.nextLine().split(",");
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String[] data = scanner.nextLine().split(",");
                 if (data.length == 4) {
-                    Staff s = new Staff(data[0], data[1], data[2], data[3]);
-                    staffList.add(s);
+                    Staff staff = new Staff(data[0], data[1], data[2], data[3]);
+                    staffList.add(staff);
                 }
             }
         } catch (IOException e) {
@@ -81,8 +59,11 @@ public class StaffManager {
 
     private void saveAllStaff() {
         try (FileWriter writer = new FileWriter(STAFF_FILE)) {
-            for (Staff s : staffList) {
-                writer.write(s.getName() + "," + s.getStaffId() + "," + s.getUsername() + "," + s.getPassword() + "\n");
+            for (Staff staff : staffList) {
+                writer.write(staff.getName() + "," +
+                        staff.getStaffId() + "," +
+                        staff.getUsername() + "," +
+                        staff.getPassword() + "\n");
             }
         } catch (IOException e) {
             System.out.println("Error saving staff: " + e.getMessage());

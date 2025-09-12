@@ -1,42 +1,35 @@
 package ap.exercises.FinalProject;
 
-public class Student {
-    private String name;
+public class Student extends Person {
     private String studentId;
-    private String username;
-    private String password;
+    private boolean active;
 
     public Student(String name, String studentId, String username, String password) {
-        this.name = name != null ? name.trim() : "";
+        super(name, username, password);
         this.studentId = studentId != null ? studentId.trim() : "";
-        this.username = username != null ? username.trim() : "";
-        this.password = password != null ? password : "";
+        this.active = true;
     }
 
-    public String getName() {
-        return name;
-    }
     public String getStudentId() {
         return studentId;
     }
-    public String getUsername() {
-        return username;
-    }
-    public String getPassword() {
-        return password;
+
+    public boolean isActive() {
+        return active;
     }
 
-    public void setName(String name) {
-        this.name = name != null ? name.trim() : this.name;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public void setPassword(String password) {
-        this.password = password != null ? password : this.password;
+    public void setStudentId(String studentId) {
+        if (studentId != null && !studentId.trim().isEmpty()) {
+            this.studentId = studentId.trim();
+        }
     }
-
 
     @Override
     public String toString() {
-        return "Name: " + name + " | Student ID: " + studentId + " | Username: " + username;
+        return "Name: " + getName() + " | Student ID: " + studentId + " | Username: " + getUsername() + " | Status: " + (active ? "Active" : "Inactive");
     }
 }

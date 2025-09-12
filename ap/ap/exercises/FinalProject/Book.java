@@ -12,61 +12,41 @@ public class Book {
     private LocalDate endDate;
 
     public Book(String id, String title, String author, int year) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
+        this.id = id != null ? id.trim() : "";
+        this.title = title != null ? title.trim() : "";
+        this.author = author != null ? author.trim() : "";
         this.year = year;
         this.borrowed = false;
-        this.startDate = null;
-        this.endDate = null;
     }
 
     public String getId() { return id; }
+    public String getTitle() { return title; }
+    public String getAuthor() { return author; }
+    public int getYear() { return year; }
+    public boolean isBorrowed() { return borrowed; }
+    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getEndDate() { return endDate; }
 
-    public String getTitle() {
-        return title;
-    }
     public void setTitle(String title) {
-        this.title = title;
+        if (title != null && !title.trim().isEmpty()) {
+            this.title = title.trim();
+        }
     }
 
-    public String getAuthor() {
-        return author;
-    }
     public void setAuthor(String author) {
-        this.author = author;
+        if (author != null && !author.trim().isEmpty()) {
+            this.author = author.trim();
+        }
     }
 
-    public int getYear() {
-        return year;
-    }
-    public void setYear(int year) {
-        this.year = year;
-    }
+    public void setYear(int year) { this.year = year; }
+    public void setBorrowed(boolean borrowed) { this.borrowed = borrowed; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public boolean isBorrowed() {
-        return borrowed;
-    }
-    public void setBorrowed(boolean borrowed) {
-        this.borrowed = borrowed;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
+    @Override
     public String toString() {
-        return "ID: " + id + ", Title: " + title + ", Author: " + author +
-                ", Year: " + year + ", Available: " + !borrowed;
+        return "ID: " + id + " | Title: " + title + " | Author: " + author +
+                " | Year: " + year + " | Status: " + (borrowed ? "Borrowed" : "Available");
     }
 }

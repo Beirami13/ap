@@ -19,12 +19,15 @@ public class LibrarySystem {
     public int getStudentCount() {
         return studentManager.getStudentCount();
     }
+
     public int getBookCount() {
         return bookManager.getBookCount();
     }
+
     public int getTotalBorrows() {
         return bookManager.getTotalBorrows();
     }
+
     public int getCurrentlyBorrowedCount() {
         return bookManager.getCurrentlyBorrowedCount();
     }
@@ -40,6 +43,7 @@ public class LibrarySystem {
     public void searchBooks() {
         bookManager.searchBooks();
     }
+
     public void searchBookByTitleForGuest() {
         bookManager.searchBookByTitleForGuest();
     }
@@ -47,6 +51,7 @@ public class LibrarySystem {
     public void registerBook() {
         bookManager.registerBook();
     }
+
     public void editBook() {
         bookManager.editBook();
     }
@@ -101,7 +106,25 @@ public class LibrarySystem {
         bookManager.approveBorrowRequests();
     }
 
-    public void start() { menuHandler.displayMainMenu(); }
+    public void start() {
+        menuHandler.displayMainMenu();
+    }
+
+    public void viewStudentBorrowHistory(String studentId) {
+        bookManager.viewStudentBorrowHistory(studentId);
+    }
+
+    public void toggleStudentStatus(Student student) {
+        bookManager.toggleStudentStatus(student);
+    }
+
+    public void receiveReturnedBook(String bookId) {
+        bookManager.receiveReturnedBook(bookId);
+    }
+
+    public Student findStudentById(String studentId) {
+        return studentManager.findStudentById(studentId);
+    }
 
     public static void main(String[] args) {
         LibrarySystem system = new LibrarySystem();

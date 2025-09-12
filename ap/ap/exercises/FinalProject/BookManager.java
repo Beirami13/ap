@@ -9,8 +9,11 @@ import java.util.stream.Collectors;
 
 public class BookManager {
     private List<Book> books = new ArrayList<>();
+    private List<BorrowRequest> borrowRequests = new ArrayList<>();
+
     private static final String BOOK_FILE = "books.txt";
     private static final String BORROW_LOG = "borrows.txt";
+    private static final String REQUESTS_FILE = "borrow_requests.txt";
 
     public BookManager() {
         loadBooksFromFile();
@@ -22,11 +25,15 @@ public class BookManager {
     }
 
     public int getTotalBorrows() {
-        File f = new File(BORROW_LOG);
-        if (!f.exists()) return 0;
+        File file = new File(BORROW_LOG);
+        if (!file.exists()) return 0;
+
         int count = 0;
-        try (Scanner sc = new Scanner(f)) {
-            while (sc.hasNextLine()) { sc.nextLine(); count++; }
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                scanner.nextLine();
+                count++;
+            }
         } catch (IOException e) {
             System.out.println("Error reading borrow log: " + e.getMessage());
         }
@@ -34,11 +41,15 @@ public class BookManager {
     }
 
     public int getCurrentlyBorrowedCount() {
-        return (int) books.stream().filter(Book::isBorrowed).count();
+        return (int) books.stream()
+                .filter(Book::isBorrowed)
+                .count();
     }
 
     public List<Book> getAvailableBooks() {
-        return books.stream().filter(b -> !b.isBorrowed()).collect(Collectors.toList());
+        return books.stream()
+                .filter(book -> !book.isBorrowed())
+                .collect(Collectors.toList());
     }
 
     public void searchBooks() {
@@ -63,14 +74,14 @@ public class BookManager {
                 System.out.print("Enter book title: ");
                 String title = scanner.nextLine().toLowerCase();
                 results = books.stream()
-                        .filter(b -> b.getTitle().toLowerCase().contains(title))
+                        .filter(book -> book.getTitle().toLowerCase().contains(title))
                         .collect(Collectors.toList());
                 break;
             case 2:
                 System.out.print("Enter author name: ");
                 String author = scanner.nextLine().toLowerCase();
                 results = books.stream()
-                        .filter(b -> b.getAuthor().toLowerCase().contains(author))
+                        .filter(book -> book.getAuthor().toLowerCase().contains(author))
                         .collect(Collectors.toList());
                 break;
             case 3:
@@ -78,7 +89,7 @@ public class BookManager {
                 try {
                     int year = Integer.parseInt(scanner.nextLine());
                     results = books.stream()
-                            .filter(b -> b.getYear() == year)
+                            .filter(book -> book.getYear() == year)
                             .collect(Collectors.toList());
                 } catch (NumberFormatException e) {
                     System.out.println("Year must be a number.");
@@ -94,8 +105,8 @@ public class BookManager {
             System.out.println("No books found.");
         } else {
             System.out.println("\nSearch Results:");
-            for (Book b : results) {
-                System.out.println(b + ", Status: " + (b.isBorrowed() ? "Borrowed" : "Available"));
+            for (Book book : results) {
+                System.out.println(book);
             }
         }
     }
@@ -153,28 +164,16 @@ public class BookManager {
         System.out.println("Book returned successfully!");
     }
 
-    private void appendBorrowLog(Student student, Book book, LocalDate start, LocalDate end) {
-        try (FileWriter writer = new FileWriter(BORROW_LOG, true)) {
-            writer.write(student.getStudentId() + "," +
-                    student.getUsername() + "," +
-                    book.getId() + "," +
-                    book.getTitle() + "," +
-                    start + "," + end + "\n");
-        } catch (IOException e) {
-            System.out.println("Error logging borrow: " + e.getMessage());
-        }
-    }
-
     private void saveAllBooks() {
         try (FileWriter writer = new FileWriter(BOOK_FILE)) {
-            for (Book b : books) {
-                writer.write(b.getId() + "," +
-                        escapeCsv(b.getTitle()) + "," +
-                        escapeCsv(b.getAuthor()) + "," +
-                        b.getYear() + "," +
-                        b.isBorrowed() + "," +
-                        (b.getStartDate() != null ? b.getStartDate() : "") + "," +
-                        (b.getEndDate() != null ? b.getEndDate() : "") + "\n");
+            for (Book book : books) {
+                writer.write(book.getId() + "," +
+                        escapeCsv(book.getTitle()) + "," +
+                        escapeCsv(book.getAuthor()) + "," +
+                        book.getYear() + "," +
+                        book.isBorrowed() + "," +
+                        (book.getStartDate() != null ? book.getStartDate() : "") + "," +
+                        (book.getEndDate() != null ? book.getEndDate() : "") + "\n");
             }
         } catch (IOException e) {
             System.out.println("Error saving books: " + e.getMessage());
@@ -186,25 +185,25 @@ public class BookManager {
         File file = new File(BOOK_FILE);
         if (!file.exists()) return;
 
-        try (Scanner sc = new Scanner(file)) {
-            while (sc.hasNextLine()) {
-                String[] data = sc.nextLine().split(",", -1);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String[] data = scanner.nextLine().split(",", -1);
                 if (data.length >= 4) {
-                    Book b = new Book(data[0].trim(),
+                    Book book = new Book(data[0].trim(),
                             data[1].trim(),
                             data[2].trim(),
                             Integer.parseInt(data[3].trim()));
 
                     if (data.length >= 5) {
-                        b.setBorrowed(Boolean.parseBoolean(data[4].trim()));
+                        book.setBorrowed(Boolean.parseBoolean(data[4].trim()));
                     }
 
                     if (data.length >= 7) {
-                        if (!data[5].isEmpty()) b.setStartDate(LocalDate.parse(data[5].trim()));
-                        if (!data[6].isEmpty()) b.setEndDate(LocalDate.parse(data[6].trim()));
+                        if (!data[5].isEmpty()) book.setStartDate(LocalDate.parse(data[5].trim()));
+                        if (!data[6].isEmpty()) book.setEndDate(LocalDate.parse(data[6].trim()));
                     }
 
-                    books.add(b);
+                    books.add(book);
                 }
             }
         } catch (IOException e) {
@@ -218,34 +217,34 @@ public class BookManager {
         String title = scanner.nextLine().toLowerCase();
 
         List<Book> results = books.stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(title))
+                .filter(book -> book.getTitle().toLowerCase().contains(title))
                 .collect(Collectors.toList());
 
         if (results.isEmpty()) {
             System.out.println("No books found.");
         } else {
             System.out.println("\nSearch Results:");
-            for (Book b : results) {
-                System.out.println("Title: " + b.getTitle() + ", Author: " + b.getAuthor() +
-                        ", Year: " + b.getYear() + ", Status: " +
-                        (b.isBorrowed() ? "Borrowed" : "Available"));
+            for (Book book : results) {
+                System.out.println("Title: " + book.getTitle() + ", Author: " + book.getAuthor() +
+                        ", Year: " + book.getYear() + ", Status: " +
+                        (book.isBorrowed() ? "Borrowed" : "Available"));
             }
         }
     }
 
     public void registerBook() {
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter book ID: ");
-        String id = sc.nextLine();
+        String id = scanner.nextLine();
         System.out.print("Enter book title: ");
-        String title = sc.nextLine();
+        String title = scanner.nextLine();
         System.out.print("Enter author name: ");
-        String author = sc.nextLine();
+        String author = scanner.nextLine();
         System.out.print("Enter publication year: ");
 
         int year;
         try {
-            year = Integer.parseInt(sc.nextLine());
+            year = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
             System.out.println("Year must be a number.");
             return;
@@ -258,15 +257,11 @@ public class BookManager {
     }
 
     public void editBook() {
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter book ID to edit: ");
-        String id = sc.nextLine().trim();
+        String id = scanner.nextLine().trim();
 
-        Book book = books.stream()
-                .filter(b -> b.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-
+        Book book = findBookById(id);
         if (book == null) {
             System.out.println("Book not found.");
             return;
@@ -274,18 +269,18 @@ public class BookManager {
 
         System.out.println("Editing: " + book);
         System.out.print("New title (leave blank to keep current): ");
-        String newTitle = sc.nextLine();
+        String newTitle = scanner.nextLine();
         if (newTitle != null && !newTitle.trim().isEmpty()) book.setTitle(newTitle);
 
         System.out.print("New author (leave blank to keep current): ");
-        String newAuthor = sc.nextLine();
+        String newAuthor = scanner.nextLine();
         if (newAuthor != null && !newAuthor.trim().isEmpty()) book.setAuthor(newAuthor);
 
         System.out.print("New year (leave blank to keep current): ");
-        String yInput = sc.nextLine();
-        if (yInput != null && !yInput.trim().isEmpty()) {
+        String yearInput = scanner.nextLine();
+        if (yearInput != null && !yearInput.trim().isEmpty()) {
             try {
-                book.setYear(Integer.parseInt(yInput));
+                book.setYear(Integer.parseInt(yearInput));
             } catch (NumberFormatException e) {
                 System.out.println("Invalid year. Keeping current.");
             }
@@ -301,8 +296,8 @@ public class BookManager {
             System.out.println("No books available at the moment.");
         } else {
             System.out.println("\nAvailable Books:");
-            for (Book b : availableBooks) {
-                System.out.println(b);
+            for (Book book : availableBooks) {
+                System.out.println(book);
             }
         }
     }
@@ -311,9 +306,6 @@ public class BookManager {
         if (value == null) return "";
         return value.replace(",", " ");
     }
-
-    private List<BorrowRequest> borrowRequests = new ArrayList<>();
-    private static final String REQUESTS_FILE = "borrow_requests.txt";
 
     public void submitBorrowRequest(Student student, String bookId, LocalDate startDate, LocalDate endDate) {
         String requestId = "REQ_" + System.currentTimeMillis();
@@ -341,9 +333,9 @@ public class BookManager {
         File file = new File(REQUESTS_FILE);
         if (!file.exists()) return;
 
-        try (Scanner sc = new Scanner(file)) {
-            while (sc.hasNextLine()) {
-                String[] data = sc.nextLine().split(",", -1);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String[] data = scanner.nextLine().split(",", -1);
                 if (data.length >= 6) {
                     BorrowRequest request = new BorrowRequest(
                             data[0].trim(), data[1].trim(), data[2].trim(),
@@ -361,8 +353,8 @@ public class BookManager {
     public void approveBorrowRequests() {
         LocalDate today = LocalDate.now();
         List<BorrowRequest> requestsToApprove = borrowRequests.stream()
-                .filter(r -> r.getStatus().equals("PENDING"))
-                .filter(r -> r.getStartDate().isEqual(today) || r.getStartDate().isEqual(today.minusDays(1)))
+                .filter(request -> request.getStatus().equals("PENDING"))
+                .filter(request -> request.getStartDate().isEqual(today) || request.getStartDate().isEqual(today.minusDays(1)))
                 .collect(Collectors.toList());
 
         if (requestsToApprove.isEmpty()) {
@@ -399,7 +391,7 @@ public class BookManager {
 
     private Book findBookById(String bookId) {
         return books.stream()
-                .filter(b -> b.getId().equals(bookId))
+                .filter(book -> book.getId().equals(bookId))
                 .findFirst()
                 .orElse(null);
     }
@@ -418,4 +410,84 @@ public class BookManager {
             System.out.println("Error saving borrow requests: " + e.getMessage());
         }
     }
+
+    public void viewStudentBorrowHistory(String studentId) {
+
+        List<BorrowRequest> studentRequests = borrowRequests.stream()
+                .filter(request -> request.getStudentId().equals(studentId))
+                .collect(Collectors.toList());
+
+        if (studentRequests.isEmpty()) {
+            System.out.println("No borrow history found for this student.");
+            return;
+        }
+
+        long totalBorrows = studentRequests.size();
+        long notReturnedCount = studentRequests.stream()
+                .filter(request -> request.getStatus().equals("APPROVED"))
+                .filter(request -> {
+                    Book book = findBookById(request.getBookId());
+                    return book != null && book.isBorrowed();
+                })
+                .count();
+
+        long delayedReturns = studentRequests.stream()
+                .filter(request -> request.getStatus().equals("APPROVED"))
+                .filter(request -> request.getEndDate().isBefore(LocalDate.now()))
+                .filter(request -> {
+                    Book book = findBookById(request.getBookId());
+                    return book != null && book.isBorrowed();
+                })
+                .count();
+
+        System.out.println("\n--- Student Borrow History Report ---");
+        System.out.println("Student ID: " + studentId);
+        System.out.println("Total borrows: " + totalBorrows);
+        System.out.println("Not returned books: " + notReturnedCount);
+        System.out.println("Delayed returns: " + delayedReturns);
+
+        System.out.println("\nBorrow History:");
+        for (BorrowRequest request : studentRequests) {
+            Book book = findBookById(request.getBookId());
+            String bookTitle = (book != null) ? book.getTitle() : "Unknown Book";
+
+            System.out.println("Book: " + bookTitle +
+                    ", Period: " + request.getStartDate() + " to " + request.getEndDate() +
+                    ", Status: " + request.getStatus() +
+                    ", Current: " + (book != null && book.isBorrowed() ? "Borrowed" : "Returned"));
+        }
+    }
+
+    public void toggleStudentStatus(Student student) {
+        student.setActive(!student.isActive());
+        System.out.println("Student " + (student.isActive() ? "activated" : "deactivated") + " successfully.");
+    }
+
+    public void receiveReturnedBook(String bookId) {
+        Book book = findBookById(bookId);
+        if (book == null) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        if (!book.isBorrowed()) {
+            System.out.println("This book is not currently borrowed.");
+            return;
+        }
+
+        book.setBorrowed(false);
+        book.setStartDate(null);
+        book.setEndDate(null);
+
+        borrowRequests.stream()
+                .filter(request -> request.getBookId().equals(bookId) && request.getStatus().equals("APPROVED"))
+                .findFirst()
+                .ifPresent(request -> request.setStatus("RETURNED"));
+
+        saveAllBooks();
+        saveAllBorrowRequests();
+        System.out.println("Book returned successfully! Return time: " + LocalDate.now());
+    }
+
+
 }
