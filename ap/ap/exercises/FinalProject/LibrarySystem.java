@@ -126,6 +126,14 @@ public class LibrarySystem {
         return studentManager.findStudentById(studentId);
     }
 
+    public void registerStaff(String name, String staffId, String username, String password) {
+        staffManager.registerStaff(name, staffId, username, password);
+    }
+
+    public Staff authenticateManager(String password) {
+        return staffManager.authenticateManager("manager", password);
+    }
+
     public static void main(String[] args) {
         LibrarySystem system = new LibrarySystem();
         system.start();

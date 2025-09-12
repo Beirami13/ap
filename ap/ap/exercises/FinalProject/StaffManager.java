@@ -15,6 +15,18 @@ public class StaffManager {
             loadDefaultStaff();
             saveAllStaff();
         }
+        addDefaultManager();
+    }
+
+    private void addDefaultManager() {
+        boolean managerExists = staffList.stream()
+                .anyMatch(staff -> staff.getUsername().equals("manager"));
+
+        if (!managerExists) {
+            Staff manager = new Staff("System Manager", "M001", "manager", "admin123");
+            staffList.add(manager);
+            saveAllStaff();
+        }
     }
 
     private void loadDefaultStaff() {
@@ -68,5 +80,35 @@ public class StaffManager {
         } catch (IOException e) {
             System.out.println("Error saving staff: " + e.getMessage());
         }
+    }
+
+    public void registerStaff(String name, String staffId, String username, String password) {
+        if (isUsernameTaken(username)) {
+            System.out.println("Username already exists! Choose a different one.");
+            return;
+        }
+
+        if (password == null || password.length() < 4) {
+            System.out.println("Password must be at least 4 characters long.");
+            return;
+        }
+
+        Staff staff = new Staff(name, staffId, username, password);
+        staffList.add(staff);
+        saveAllStaff();
+        System.out.println("Staff registered successfully!");
+    }
+
+    private boolean isUsernameTaken(String username) {
+        return staffList.stream()
+                .anyMatch(staff -> staff.getUsername().equalsIgnoreCase(username));
+    }
+
+    public Staff authenticateManager(String username, String password) {
+        return staffList.stream()
+                .filter(staff -> staff.getUsername().equals("manager") &&
+                        staff.getPassword().equals(password))
+                .findFirst()
+                .orElse(null);
     }
 }

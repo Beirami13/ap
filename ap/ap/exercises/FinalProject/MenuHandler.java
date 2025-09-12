@@ -20,11 +20,12 @@ public class MenuHandler {
             System.out.println("2. Student Registration");
             System.out.println("3. Student Login");
             System.out.println("4. Staff Login");
-            System.out.println("5. View Registered Student Count");
-            System.out.println("6. Exit");
+            System.out.println("5. Manager Login");
+            System.out.println("6. View Registered Student Count");
+            System.out.println("7. Exit");
             System.out.print("Please enter your choice: ");
 
-            int choice = getIntInput(1, 6);
+            int choice = getIntInput(1, 7);
             switch (choice) {
                 case 1:
                     displayGuestMenu();
@@ -39,9 +40,12 @@ public class MenuHandler {
                     displayStaffLoginMenu();
                     break;
                 case 5:
-                    displayStudentCount();
+                    displayManagerLoginMenu();
                     break;
                 case 6:
+                    displayStudentCount();
+                    break;
+                case 7:
                     System.out.println("Exiting system. Goodbye!");
                     return;
                 default:
@@ -226,6 +230,64 @@ public class MenuHandler {
                     return;
             }
         }
+    }
+
+    public void displayManagerLoginMenu() {
+        System.out.println("\n--- Manager Login ---");
+        System.out.print("Enter Manager Password: ");
+        String password = scanner.nextLine();
+
+        Staff manager = librarySystem.authenticateManager(password);
+        if (manager != null) {
+            System.out.println("Login successful! Welcome, Manager.");
+            displayManagerDashboard();
+        } else {
+            System.out.println("Invalid manager password.");
+        }
+    }
+
+    private void displayManagerDashboard() {
+        while (true) {
+            System.out.println("\n=== Manager Dashboard ===");
+            System.out.println("1. Register New Staff");
+            System.out.println("2. View Staff Performance");
+            System.out.println("3. View Borrow Statistics");
+            System.out.println("4. View Student Statistics");
+            System.out.println("5. Logout");
+            System.out.print("Choose an option: ");
+            int choice = getIntInput(1, 5);
+            switch (choice) {
+                case 1:
+                    registerNewStaff();
+                    break;
+                case 2:
+                    System.out.println("Staff performance feature coming soon...");
+                    break;
+                case 3:
+                    System.out.println("Borrow statistics feature coming soon...");
+                    break;
+                case 4:
+                    System.out.println("Student statistics feature coming soon...");
+                    break;
+                case 5:
+                    System.out.println("Logged out successfully.");
+                    return;
+            }
+        }
+    }
+
+    private void registerNewStaff() {
+        System.out.println("\n--- Register New Staff ---");
+        System.out.print("Staff name: ");
+        String name = scanner.nextLine();
+        System.out.print("Staff ID: ");
+        String staffId = scanner.nextLine();
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        librarySystem.registerStaff(name, staffId, username, password);
     }
 
     private int getIntInput(int min, int max) {
