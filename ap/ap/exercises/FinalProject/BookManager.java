@@ -380,6 +380,7 @@ public class BookManager {
                     book.setBorrowed(true);
                     book.setStartDate(request.getStartDate());
                     book.setEndDate(request.getEndDate());
+                    request.setStatus("BORROWED");
                 }
                 System.out.println("Request approved successfully!");
             } else {
@@ -472,24 +473,46 @@ public class BookManager {
             System.out.println("Book not found.");
             return;
         }
-
         if (!book.isBorrowed()) {
             System.out.println("This book is not currently borrowed.");
             return;
         }
+        BorrowRequest borrowRequest = borrowRequests.stream()
+                .filter(request -> request.getBookId().equals(bookId) &&
+                        (request.getStatus().equals("APPROVED") || request.getStatus().equals("BORROWED")))
+                .findFirst()
+                .orElse(null);
+
+        if (borrowRequest == null) {
+            System.out.println("No active borrow request found for this book.");
+            return;
+        }
+
+        LocalDate returnDate = LocalDate.now();
 
         book.setBorrowed(false);
         book.setStartDate(null);
         book.setEndDate(null);
 
-        borrowRequests.stream()
-                .filter(request -> request.getBookId().equals(bookId) && request.getStatus().equals("APPROVED"))
-                .findFirst()
-                .ifPresent(request -> request.setStatus("RETURNED"));
+        borrowRequest.setStatus("RETURNED");
+
+        appendReturnLog(borrowRequest.getStudentId(), book, returnDate);
 
         saveAllBooks();
         saveAllBorrowRequests();
-        System.out.println("Book returned successfully! Return time: " + LocalDate.now());
+
+        System.out.println("Book returned successfully on: " + returnDate);
+    }
+
+    private void appendReturnLog(String studentId, Book book, LocalDate returnDate) {
+        try (FileWriter writer = new FileWriter(BORROW_LOG, true)) {
+            writer.write("RETURN," + studentId + "," +
+                    book.getId() + "," +
+                    book.getTitle() + "," +
+                    returnDate + "\n");
+        } catch (IOException e) {
+            System.out.println("Error logging return: " + e.getMessage());
+        }
     }
 
 

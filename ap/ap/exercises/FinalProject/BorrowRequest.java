@@ -19,15 +19,29 @@ public class BorrowRequest {
         this.status = "PENDING";
     }
 
-    public String getRequestId() { return requestId; }
-    public String getStudentId() { return studentId; }
-    public String getBookId() { return bookId; }
-    public LocalDate getStartDate() { return startDate; }
-    public LocalDate getEndDate() { return endDate; }
-    public String getStatus() { return status; }
+    public String getRequestId() {
+        return requestId;
+    }
+    public String getStudentId() {
+        return studentId;
+    }
+    public String getBookId() {
+        return bookId;
+    }
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+    public String getStatus() {
+        return status;
+    }
 
     public void setStatus(String status) {
-        if (status != null && (status.equals("PENDING") || status.equals("APPROVED") || status.equals("REJECTED"))) {
+        if (status != null && (status.equals("PENDING") || status.equals("APPROVED") ||
+                status.equals("REJECTED") || status.equals("RETURNED") ||
+                status.equals("BORROWED"))) {
             this.status = status;
         }
     }
