@@ -264,7 +264,7 @@ public class MenuHandler {
                     librarySystem.viewStaffPerformance();
                     break;
                 case 3:
-                    System.out.println("Borrow statistics feature coming soon...");
+                    librarySystem.viewBorrowStatistics();
                     break;
                 case 4:
                     System.out.println("Student statistics feature coming soon...");

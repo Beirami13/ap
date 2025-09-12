@@ -8,6 +8,7 @@ public class BorrowRequest {
     private String bookId;
     private LocalDate startDate;
     private LocalDate endDate;
+    private long daysLate;
     private String status;
 
     public BorrowRequest(String requestId, String studentId, String bookId, LocalDate startDate, LocalDate endDate) {
@@ -37,13 +38,18 @@ public class BorrowRequest {
     public String getStatus() {
         return status;
     }
-
+    public long getDaysLate() {
+        return daysLate;
+    }
     public void setStatus(String status) {
         if (status != null && (status.equals("PENDING") || status.equals("APPROVED") ||
                 status.equals("REJECTED") || status.equals("RETURNED") ||
                 status.equals("BORROWED"))) {
             this.status = status;
         }
+    }
+    public void setDaysLate(long daysLate) {
+        this.daysLate = daysLate;
     }
 
     @Override

@@ -138,6 +138,10 @@ public class LibrarySystem {
         staffManager.viewStaffPerformance();
     }
 
+    public void viewBorrowStatistics() {
+        bookManager.viewBorrowStatistics();
+    }
+
     public static void main(String[] args) {
         LibrarySystem system = new LibrarySystem();
         system.start();

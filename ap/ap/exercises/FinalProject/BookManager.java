@@ -118,10 +118,12 @@ public class BookManager {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter book ID to borrow: ");
         String bookId = scanner.nextLine().trim();
+
         if (!student.isActive()) {
-            System.out.println("Sorry, You cannot borrow books.");
+            System.out.println("Sorry, your account is deactivated. You cannot borrow books.");
             return;
         }
+
         Book book = findBookById(bookId);
         if (book == null) {
             System.out.println("Book not found.");
@@ -168,6 +170,18 @@ public class BookManager {
 
         saveAllBooks();
         System.out.println("Book returned successfully!");
+    }
+
+    private void appendBorrowLog(Student student, Book book, LocalDate start, LocalDate end) {
+        try (FileWriter writer = new FileWriter(BORROW_LOG, true)) {
+            writer.write("BORROW," + student.getStudentId() + "," +
+                    student.getUsername() + "," +
+                    book.getId() + "," +
+                    book.getTitle() + "," +
+                    start + "," + end + "\n");
+        } catch (IOException e) {
+            System.out.println("Error logging borrow: " + e.getMessage());
+        }
     }
 
     private void saveAllBooks() {
@@ -381,9 +395,12 @@ public class BookManager {
                 Book book = findBookById(request.getBookId());
                 if (book != null) {
                     book.setBorrowed(true);
-                    book.setStartDate(request.getStartDate());
+                    book.setStartDate(LocalDate.now());
                     book.setEndDate(request.getEndDate());
                     request.setStatus("BORROWED");
+
+                    appendBorrowLog(findStudentById(request.getStudentId()), book,
+                            LocalDate.now(), request.getEndDate());
                 }
                 System.out.println("Request approved successfully!");
             } else {
@@ -403,6 +420,12 @@ public class BookManager {
                 .orElse(null);
     }
 
+    private Student findStudentById(String studentId) {
+        // این متد باید در StudentManager پیاده‌سازی شود
+        // برای نمونه یک دانشجوی موقت برمی‌گردانیم
+        return new Student("Unknown", studentId, "unknown", "password");
+    }
+
     private void saveAllBorrowRequests() {
         try (FileWriter writer = new FileWriter(REQUESTS_FILE)) {
             for (BorrowRequest request : borrowRequests) {
@@ -419,7 +442,6 @@ public class BookManager {
     }
 
     public void viewStudentBorrowHistory(String studentId) {
-
         List<BorrowRequest> studentRequests = borrowRequests.stream()
                 .filter(request -> request.getStudentId().equals(studentId))
                 .collect(Collectors.toList());
@@ -431,7 +453,7 @@ public class BookManager {
 
         long totalBorrows = studentRequests.size();
         long notReturnedCount = studentRequests.stream()
-                .filter(request -> request.getStatus().equals("APPROVED"))
+                .filter(request -> request.getStatus().equals("APPROVED") || request.getStatus().equals("BORROWED"))
                 .filter(request -> {
                     Book book = findBookById(request.getBookId());
                     return book != null && book.isBorrowed();
@@ -439,12 +461,8 @@ public class BookManager {
                 .count();
 
         long delayedReturns = studentRequests.stream()
-                .filter(request -> request.getStatus().equals("APPROVED"))
+                .filter(request -> request.getStatus().equals("BORROWED"))
                 .filter(request -> request.getEndDate().isBefore(LocalDate.now()))
-                .filter(request -> {
-                    Book book = findBookById(request.getBookId());
-                    return book != null && book.isBorrowed();
-                })
                 .count();
 
         System.out.println("\n--- Student Borrow History Report ---");
@@ -476,13 +494,15 @@ public class BookManager {
             System.out.println("Book not found.");
             return;
         }
+
         if (!book.isBorrowed()) {
             System.out.println("This book is not currently borrowed.");
             return;
         }
+
         BorrowRequest borrowRequest = borrowRequests.stream()
                 .filter(request -> request.getBookId().equals(bookId) &&
-                        (request.getStatus().equals("APPROVED") || request.getStatus().equals("BORROWED")))
+                        request.getStatus().equals("BORROWED"))
                 .findFirst()
                 .orElse(null);
 
@@ -492,31 +512,83 @@ public class BookManager {
         }
 
         LocalDate returnDate = LocalDate.now();
+        long daysLate = 0;
+
+        if (returnDate.isAfter(borrowRequest.getEndDate())) {
+            daysLate = java.time.temporal.ChronoUnit.DAYS.between(
+                    borrowRequest.getEndDate(), returnDate);
+        }
 
         book.setBorrowed(false);
         book.setStartDate(null);
         book.setEndDate(null);
-
         borrowRequest.setStatus("RETURNED");
 
-        appendReturnLog(borrowRequest.getStudentId(), book, returnDate);
+        appendReturnLog(borrowRequest.getStudentId(), book, returnDate, daysLate);
 
         saveAllBooks();
         saveAllBorrowRequests();
 
         System.out.println("Book returned successfully on: " + returnDate);
+        if (daysLate > 0) {
+            System.out.println("This book was " + daysLate + " days late.");
+        }
     }
 
-    private void appendReturnLog(String studentId, Book book, LocalDate returnDate) {
+    private void appendReturnLog(String studentId, Book book, LocalDate returnDate, long daysLate) {
         try (FileWriter writer = new FileWriter(BORROW_LOG, true)) {
             writer.write("RETURN," + studentId + "," +
                     book.getId() + "," +
                     book.getTitle() + "," +
-                    returnDate + "\n");
+                    returnDate + "," +
+                    daysLate + "\n");
         } catch (IOException e) {
             System.out.println("Error logging return: " + e.getMessage());
         }
     }
 
+    public void viewBorrowStatistics() {
+        long totalRequests = borrowRequests.size();
+        long approvedRequests = borrowRequests.stream()
+                .filter(request -> request.getStatus().equals("APPROVED") ||
+                        request.getStatus().equals("BORROWED") ||
+                        request.getStatus().equals("RETURNED"))
+                .count();
 
+        long returnedRequests = borrowRequests.stream()
+                .filter(request -> request.getStatus().equals("RETURNED"))
+                .count();
+
+        double averageDays = calculateAverageBorrowDays();
+
+        System.out.println("\n=== Borrow Statistics Report ===");
+        System.out.println("----------------------------------------");
+        System.out.println("Total Borrow Requests: " + totalRequests);
+        System.out.println("Total Approved Requests: " + approvedRequests);
+        System.out.println("Total Returned Books: " + returnedRequests);
+        System.out.printf("Average Borrow Days: %.2f days%n", averageDays);
+        System.out.println("----------------------------------------");
+    }
+
+    private double calculateAverageBorrowDays() {
+        List<BorrowRequest> returnedRequests = borrowRequests.stream()
+                .filter(request -> request.getStatus().equals("RETURNED"))
+                .collect(Collectors.toList());
+
+        if (returnedRequests.isEmpty()) {
+            return 0.0;
+        }
+
+        long totalDays = 0;
+        for (BorrowRequest request : returnedRequests) {
+            Book book = findBookById(request.getBookId());
+            if (book != null && book.getStartDate() != null && book.getEndDate() != null) {
+                long days = java.time.temporal.ChronoUnit.DAYS.between(
+                        book.getStartDate(), book.getEndDate());
+                totalDays += days;
+            }
+        }
+
+        return (double) totalDays / returnedRequests.size();
+    }
 }
