@@ -115,7 +115,10 @@ public class BookManager {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter book ID to borrow: ");
         String bookId = scanner.nextLine().trim();
-
+        if (!student.isActive()) {
+            System.out.println("Sorry, You cannot borrow books.");
+            return;
+        }
         Book book = findBookById(bookId);
         if (book == null) {
             System.out.println("Book not found.");

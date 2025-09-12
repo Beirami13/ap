@@ -13,13 +13,8 @@ public class Student extends Person {
     public String getStudentId() {
         return studentId;
     }
-
     public boolean isActive() {
         return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public void setStudentId(String studentId) {
@@ -28,8 +23,14 @@ public class Student extends Person {
         }
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
-        return "Name: " + getName() + " | Student ID: " + studentId + " | Username: " + getUsername() + " | Status: " + (active ? "Active" : "Inactive");
+        return "Name: " + getName() + " | Student ID: " +
+                studentId + " | Username: " + getUsername() + " | Status: " +
+                (active ? "Active" : "Inactive");
     }
 }

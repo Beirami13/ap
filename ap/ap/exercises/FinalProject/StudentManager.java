@@ -43,7 +43,8 @@ public class StudentManager {
             writer.write(escapeCsv(student.getName()) + "," +
                     escapeCsv(student.getStudentId()) + "," +
                     escapeCsv(student.getUsername()) + "," +
-                    escapeCsv(student.getPassword()) + "\n");
+                    escapeCsv(student.getPassword()) + "," +
+                    student.isActive() + "\n");
         } catch (IOException e) {
             System.out.println("Error saving student: " + e.getMessage());
         }
@@ -65,6 +66,11 @@ public class StudentManager {
                             parts[2].trim(),
                             parts[3].trim()
                     );
+
+                    if (parts.length >= 5) {
+                        student.setActive(Boolean.parseBoolean(parts[4].trim()));
+                    }
+
                     students.add(student);
                 }
             }
@@ -124,4 +130,17 @@ public class StudentManager {
         }
         return null;
     }
+
+    public void toggleStudentStatus(String studentId) {
+        for (Student student : students) {
+            if (student.getStudentId().equals(studentId)) {
+                student.setActive(!student.isActive());
+                saveAllStudents();
+                System.out.println("Student " + (student.isActive() ? "activated" : "deactivated") + " successfully.");
+                return;
+            }
+        }
+        System.out.println("Student not found.");
+    }
+
 }
