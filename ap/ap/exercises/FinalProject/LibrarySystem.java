@@ -10,7 +10,7 @@ public class LibrarySystem {
 
     public LibrarySystem() {
         this.studentManager = new StudentManager();
-        this.bookManager = new BookManager();
+        this.bookManager = new BookManager(staffManager);
         this.staffManager = new StaffManager();
         this.menuHandler = new MenuHandler(this);
         this.bookManager.loadBorrowRequests();
@@ -132,6 +132,10 @@ public class LibrarySystem {
 
     public Staff authenticateManager(String password) {
         return staffManager.authenticateManager("manager", password);
+    }
+
+    public void viewStaffPerformance() {
+        staffManager.viewStaffPerformance();
     }
 
     public static void main(String[] args) {

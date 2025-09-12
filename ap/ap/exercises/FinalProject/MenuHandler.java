@@ -261,7 +261,7 @@ public class MenuHandler {
                     registerNewStaff();
                     break;
                 case 2:
-                    System.out.println("Staff performance feature coming soon...");
+                    librarySystem.viewStaffPerformance();
                     break;
                 case 3:
                     System.out.println("Borrow statistics feature coming soon...");

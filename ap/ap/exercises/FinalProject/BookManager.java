@@ -15,7 +15,10 @@ public class BookManager {
     private static final String BORROW_LOG = "borrows.txt";
     private static final String REQUESTS_FILE = "borrow_requests.txt";
 
-    public BookManager() {
+    private StaffManager staffManager;
+
+    public BookManager(StaffManager staffManager) {
+        this.staffManager = staffManager;
         loadBooksFromFile();
         loadBorrowRequests();
     }

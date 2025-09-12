@@ -111,4 +111,34 @@ public class StaffManager {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void viewStaffPerformance() {
+        if (staffList.isEmpty()) {
+            System.out.println("No staff members found.");
+            return;
+        }
+
+        System.out.println("\n=== Staff Performance Report ===");
+        System.out.println("----------------------------------------------------------------");
+        System.out.printf("%-10s %-15s %-10s %-10s %-10s%n",
+                "Staff ID", "Name", "Registered", "Borrowed", "Returned");
+        System.out.println("----------------------------------------------------------------");
+
+        for (Staff staff : staffList) {
+            System.out.printf("%-10s %-15s %-10d %-10d %-10d%n",
+                    staff.getStaffId(),
+                    staff.getName(),
+                    staff.getBooksRegistered(),
+                    staff.getBooksBorrowed(),
+                    staff.getBooksReturned());
+        }
+        System.out.println("----------------------------------------------------------------");
+    }
+
+    public Staff findStaffByUsername(String username) {
+        return staffList.stream()
+                .filter(staff -> staff.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
 }
