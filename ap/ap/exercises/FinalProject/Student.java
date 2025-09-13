@@ -29,8 +29,7 @@ public class Student extends Person {
 
     @Override
     public String toString() {
-        return "Name: " + getName() + " | Student ID: " +
-                studentId + " | Username: " + getUsername() + " | Status: " +
-                (active ? "Active" : "Inactive");
+        return "Name: " + getName() + " | Student ID: " + studentId +
+                " | Username: " + getUsername() + " | Status: " + (isActive() ? "Active" : "Inactive");
     }
 }

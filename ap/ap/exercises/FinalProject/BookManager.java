@@ -2,9 +2,7 @@ package ap.exercises.FinalProject;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BookManager {
@@ -16,9 +14,11 @@ public class BookManager {
     private static final String REQUESTS_FILE = "borrow_requests.txt";
 
     private StaffManager staffManager;
+    private StudentManager studentManager;
 
-    public BookManager(StaffManager staffManager) {
+    public BookManager(StaffManager staffManager, StudentManager studentManager) {
         this.staffManager = staffManager;
+        this.studentManager = studentManager;
         loadBooksFromFile();
         loadBorrowRequests();
     }
@@ -164,11 +164,32 @@ public class BookManager {
             return;
         }
 
+        BorrowRequest request = borrowRequests.stream()
+                .filter(r -> r.getBookId().equals(bookId) &&
+                        r.getStudentId().equals(student.getStudentId()) &&
+                        r.getStatus().equals("BORROWED"))
+                .findFirst()
+                .orElse(null);
+
+        if (request != null) {
+            request.setStatus("RETURNED");
+
+            LocalDate returnDate = LocalDate.now();
+            long daysLate = 0;
+            if (returnDate.isAfter(request.getEndDate())) {
+                daysLate = java.time.temporal.ChronoUnit.DAYS.between(
+                        request.getEndDate(), returnDate);
+            }
+
+            appendReturnLog(student, book, returnDate, daysLate);
+        }
+
         book.setBorrowed(false);
         book.setStartDate(null);
         book.setEndDate(null);
 
         saveAllBooks();
+        saveAllBorrowRequests();
         System.out.println("Book returned successfully!");
     }
 
@@ -399,8 +420,10 @@ public class BookManager {
                     book.setEndDate(request.getEndDate());
                     request.setStatus("BORROWED");
 
-                    appendBorrowLog(findStudentById(request.getStudentId()), book,
-                            LocalDate.now(), request.getEndDate());
+                    Student student = findStudentById(request.getStudentId());
+                    if (student != null) {
+                        appendBorrowLog(student, book, LocalDate.now(), request.getEndDate());
+                    }
                 }
                 System.out.println("Request approved successfully!");
             } else {
@@ -421,9 +444,10 @@ public class BookManager {
     }
 
     private Student findStudentById(String studentId) {
-        // این متد باید در StudentManager پیاده‌سازی شود
-        // برای نمونه یک دانشجوی موقت برمی‌گردانیم
-        return new Student("Unknown", studentId, "unknown", "password");
+        if (studentManager != null) {
+            return studentManager.findStudentById(studentId);
+        }
+        return null;
     }
 
     private void saveAllBorrowRequests() {
@@ -441,45 +465,166 @@ public class BookManager {
         }
     }
 
-    public void viewStudentBorrowHistory(String studentId) {
+    public void viewStudentStatistics() {
+        System.out.println("\n=== Student Statistics Report ===");
+        System.out.println("========================================");
+        viewAllStudentsSummary();
+        displayTopStudentsWithDelays(10);
+        System.out.println("========================================");
+    }
+
+    private void viewAllStudentsSummary() {
+        Map<String, StudentStats> studentStatsMap = new HashMap<>();
+
+        for (BorrowRequest request : borrowRequests) {
+            String studentId = request.getStudentId();
+            StudentStats stats = studentStatsMap.getOrDefault(studentId, new StudentStats(studentId));
+
+            if (request.getStatus().equals("BORROWED")) {
+                stats.notReturnedCount++;
+            } else if (request.getStatus().equals("RETURNED")) {
+                stats.returnedCount++;
+
+                long daysLate = calculateDaysLate(request);
+                if (daysLate > 0) {
+                    stats.delayedReturnsCount++;
+                    stats.totalDelayDays += daysLate;
+                }
+            }
+            stats.totalBorrows++;
+
+            studentStatsMap.put(studentId, stats);
+        }
+
+        System.out.println("\n--- Overall Student Statistics ---");
+        System.out.printf("%-15s %-20s %-12s %-15s %-15s %-18s %-15s%n",
+                "Student ID", "Name", "Total", "Returned", "Not Returned", "Delayed Returns", "Total Delay Days");
+        System.out.println("------------------------------------------------------------------------------------------------------");
+
+        for (StudentStats stats : studentStatsMap.values()) {
+            Student student = findStudentById(stats.studentId);
+            String studentName = (student != null) ? student.getName() : "Unknown";
+
+            System.out.printf("%-15s %-20s %-12d %-15d %-15d %-18d %-15d%n",
+                    stats.studentId, studentName, stats.totalBorrows,
+                    stats.returnedCount, stats.notReturnedCount,
+                    stats.delayedReturnsCount, stats.totalDelayDays);
+        }
+    }
+
+    private void displayTopStudentsWithDelays(int limit) {
+        Map<String, Long> delayDaysByStudent = new HashMap<>();
+
+        for (BorrowRequest request : borrowRequests) {
+            if (request.getStatus().equals("RETURNED")) {
+                long daysLate = calculateDaysLate(request);
+                if (daysLate > 0) {
+                    String studentId = request.getStudentId();
+                    delayDaysByStudent.put(studentId, delayDaysByStudent.getOrDefault(studentId, 0L) + daysLate);
+                }
+            }
+        }
+
+        List<Map.Entry<String, Long>> topDelayedStudents = delayDaysByStudent.entrySet().stream()
+                .sorted((e1, e2) -> Long.compare(e2.getValue(), e1.getValue()))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        System.out.println("\n--- Top " + limit + " Students with Most Delay Days ---");
+        if (topDelayedStudents.isEmpty()) {
+            System.out.println("No students with delayed returns found.");
+        } else {
+            System.out.printf("%-15s %-20s %-15s%n", "Student ID", "Name", "Total Delay Days");
+            System.out.println("-----------------------------------------------");
+
+            for (Map.Entry<String, Long> entry : topDelayedStudents) {
+                String studentId = entry.getKey();
+                Student student = findStudentById(studentId);
+                String studentName = (student != null) ? student.getName() : "Unknown";
+
+                System.out.printf("%-15s %-20s %-15d%n", studentId, studentName, entry.getValue());
+            }
+        }
+    }
+
+    private long calculateDaysLate(BorrowRequest request) {
+        if (!request.getStatus().equals("RETURNED") || request.getEndDate() == null) {
+            return 0;
+        }
+
+        LocalDate returnDate = LocalDate.now();
+        if (returnDate.isAfter(request.getEndDate())) {
+            return java.time.temporal.ChronoUnit.DAYS.between(
+                    request.getEndDate(), returnDate);
+        }
+        return 0;
+    }
+
+    private class StudentStats {
+        String studentId;
+        int totalBorrows;
+        int notReturnedCount;
+        int returnedCount;
+        int delayedReturnsCount;
+        long totalDelayDays;
+
+        public StudentStats(String studentId) {
+            this.studentId = studentId;
+            this.totalBorrows = 0;
+            this.notReturnedCount = 0;
+            this.returnedCount = 0;
+            this.delayedReturnsCount = 0;
+            this.totalDelayDays = 0;
+        }
+    }
+
+    public void viewIndividualStudentHistory(String studentId) {
         List<BorrowRequest> studentRequests = borrowRequests.stream()
                 .filter(request -> request.getStudentId().equals(studentId))
                 .collect(Collectors.toList());
 
         if (studentRequests.isEmpty()) {
-            System.out.println("No borrow history found for this student.");
+            System.out.println("No borrow history found for student ID: " + studentId);
             return;
         }
 
+        Student student = findStudentById(studentId);
+        String studentName = (student != null) ? student.getName() : "Unknown";
+
         long totalBorrows = studentRequests.size();
         long notReturnedCount = studentRequests.stream()
-                .filter(request -> request.getStatus().equals("APPROVED") || request.getStatus().equals("BORROWED"))
-                .filter(request -> {
-                    Book book = findBookById(request.getBookId());
-                    return book != null && book.isBorrowed();
-                })
-                .count();
-
-        long delayedReturns = studentRequests.stream()
                 .filter(request -> request.getStatus().equals("BORROWED"))
-                .filter(request -> request.getEndDate().isBefore(LocalDate.now()))
                 .count();
 
-        System.out.println("\n--- Student Borrow History Report ---");
-        System.out.println("Student ID: " + studentId);
-        System.out.println("Total borrows: " + totalBorrows);
-        System.out.println("Not returned books: " + notReturnedCount);
-        System.out.println("Delayed returns: " + delayedReturns);
+        long delayedReturnsCount = studentRequests.stream()
+                .filter(request -> request.getStatus().equals("RETURNED"))
+                .filter(request -> calculateDaysLate(request) > 0)
+                .count();
 
-        System.out.println("\nBorrow History:");
+        long totalDelayDays = studentRequests.stream()
+                .filter(request -> request.getStatus().equals("RETURNED"))
+                .mapToLong(this::calculateDaysLate)
+                .sum();
+
+        System.out.println("\n=== Student Borrow History ===");
+        System.out.println("Student: " + studentName + " (ID: " + studentId + ")");
+        System.out.println("----------------------------------------");
+        System.out.println("Total Borrows: " + totalBorrows);
+        System.out.println("Not Returned: " + notReturnedCount);
+        System.out.println("Delayed Returns: " + delayedReturnsCount);
+        System.out.println("Total Delay Days: " + totalDelayDays);
+        System.out.println("----------------------------------------");
+
+        System.out.println("\nDetailed Borrow History:");
         for (BorrowRequest request : studentRequests) {
             Book book = findBookById(request.getBookId());
             String bookTitle = (book != null) ? book.getTitle() : "Unknown Book";
+            long daysLate = calculateDaysLate(request);
 
             System.out.println("Book: " + bookTitle +
                     ", Period: " + request.getStartDate() + " to " + request.getEndDate() +
                     ", Status: " + request.getStatus() +
-                    ", Current: " + (book != null && book.isBorrowed() ? "Borrowed" : "Returned"));
+                    (daysLate > 0 ? ", Delay: " + daysLate + " days" : ""));
         }
     }
 
@@ -524,7 +669,10 @@ public class BookManager {
         book.setEndDate(null);
         borrowRequest.setStatus("RETURNED");
 
-        appendReturnLog(borrowRequest.getStudentId(), book, returnDate, daysLate);
+        Student student = findStudentById(borrowRequest.getStudentId());
+        if (student != null) {
+            appendReturnLog(student, book, returnDate, daysLate);
+        }
 
         saveAllBooks();
         saveAllBorrowRequests();
@@ -535,9 +683,10 @@ public class BookManager {
         }
     }
 
-    private void appendReturnLog(String studentId, Book book, LocalDate returnDate, long daysLate) {
+    private void appendReturnLog(Student student, Book book, LocalDate returnDate, long daysLate) {
         try (FileWriter writer = new FileWriter(BORROW_LOG, true)) {
-            writer.write("RETURN," + studentId + "," +
+            writer.write("RETURN," + student.getStudentId() + "," +
+                    student.getUsername() + "," +
                     book.getId() + "," +
                     book.getTitle() + "," +
                     returnDate + "," +
@@ -581,12 +730,9 @@ public class BookManager {
 
         long totalDays = 0;
         for (BorrowRequest request : returnedRequests) {
-            Book book = findBookById(request.getBookId());
-            if (book != null && book.getStartDate() != null && book.getEndDate() != null) {
-                long days = java.time.temporal.ChronoUnit.DAYS.between(
-                        book.getStartDate(), book.getEndDate());
-                totalDays += days;
-            }
+            long days = java.time.temporal.ChronoUnit.DAYS.between(
+                    request.getStartDate(), request.getEndDate());
+            totalDays += days;
         }
 
         return (double) totalDays / returnedRequests.size();

@@ -10,8 +10,8 @@ public class LibrarySystem {
 
     public LibrarySystem() {
         this.studentManager = new StudentManager();
-        this.bookManager = new BookManager(staffManager);
         this.staffManager = new StaffManager();
+        this.bookManager = new BookManager(staffManager, studentManager);
         this.menuHandler = new MenuHandler(this);
         this.bookManager.loadBorrowRequests();
     }
@@ -111,7 +111,7 @@ public class LibrarySystem {
     }
 
     public void viewStudentBorrowHistory(String studentId) {
-        bookManager.viewStudentBorrowHistory(studentId);
+        System.out.println("This feature is not available. Use viewIndividualStudentHistory instead.");
     }
 
     public void toggleStudentStatus(Student student) {
@@ -135,11 +135,24 @@ public class LibrarySystem {
     }
 
     public void viewStaffPerformance() {
-        staffManager.viewStaffPerformance();
+        System.out.println("Staff performance report is not implemented yet.");
     }
 
     public void viewBorrowStatistics() {
         bookManager.viewBorrowStatistics();
+    }
+
+    public void viewStudentStatistics() {
+        bookManager.viewStudentStatistics();
+    }
+
+    public void viewIndividualStudentHistory(String studentId) {
+        bookManager.viewIndividualStudentHistory(studentId);
+    }
+
+    public void displayTopDelayedStudents() {
+        System.out.println("Displaying top delayed students from statistics:");
+        bookManager.viewStudentStatistics();
     }
 
     public static void main(String[] args) {

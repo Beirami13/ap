@@ -253,9 +253,12 @@ public class MenuHandler {
             System.out.println("2. View Staff Performance");
             System.out.println("3. View Borrow Statistics");
             System.out.println("4. View Student Statistics");
-            System.out.println("5. Logout");
+            System.out.println("5. View Individual Student History");
+            System.out.println("6. View Top Delayed Students");
+            System.out.println("7. Logout");
             System.out.print("Choose an option: ");
-            int choice = getIntInput(1, 5);
+
+            int choice = getIntInput(1, 7);
             switch (choice) {
                 case 1:
                     registerNewStaff();
@@ -267,9 +270,17 @@ public class MenuHandler {
                     librarySystem.viewBorrowStatistics();
                     break;
                 case 4:
-                    System.out.println("Student statistics feature coming soon...");
+                    librarySystem.viewStudentStatistics();
                     break;
                 case 5:
+                    System.out.print("Enter student ID: ");
+                    String studentId = scanner.nextLine();
+                    librarySystem.viewIndividualStudentHistory(studentId);
+                    break;
+                case 6:
+                    librarySystem.displayTopDelayedStudents();
+                    break;
+                case 7:
                     System.out.println("Logged out successfully.");
                     return;
             }
