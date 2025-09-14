@@ -1,6 +1,6 @@
 package ap.exercises.FinalProject;
 
-public abstract class Person {
+public abstract class Person implements Library {
     protected String name;
     protected String username;
     protected String password;
@@ -21,6 +21,34 @@ public abstract class Person {
 
     public void setPassword(String password) {
         this.password = password != null ? password : this.password;
+    }
+
+    @Override
+    public String getId() {
+        if (this instanceof Student) {
+            return ((Student) this).getStudentId();
+        } else if (this instanceof Staff) {
+            return ((Staff) this).getStaffId();
+        }
+        return "";
+    }
+
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Override
+    public String getDisplayInfo() {
+        return toString();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        if (this instanceof Student) {
+            return ((Student) this).isActive();
+        }
+        return true;
     }
 
     @Override

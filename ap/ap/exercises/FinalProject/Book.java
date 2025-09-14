@@ -2,7 +2,7 @@ package ap.exercises.FinalProject;
 
 import java.time.LocalDate;
 
-public class Book {
+public class Book implements Library {
     private String id;
     private String title;
     private String author;
@@ -45,8 +45,18 @@ public class Book {
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
     @Override
-    public String toString() {
+    public String getDisplayInfo() {
         return "ID: " + id + " | Title: " + title + " | Author: " + author +
                 " | Year: " + year + " | Status: " + (borrowed ? "Borrowed" : "Available");
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return !borrowed;
+    }
+
+    @Override
+    public String toString() {
+        return getDisplayInfo();
     }
 }
