@@ -131,16 +131,4 @@ public class StudentManager {
         return null;
     }
 
-    public void toggleStudentStatus(String studentId) {
-        for (Student student : students) {
-            if (student.getStudentId().equals(studentId)) {
-                student.setActive(!student.isActive());
-                saveAllStudents();
-                System.out.println("Student " + (student.isActive() ? "activated" : "deactivated") + " successfully.");
-                return;
-            }
-        }
-        System.out.println("Student not found.");
-    }
-
 }
